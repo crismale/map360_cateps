@@ -1,7 +1,7 @@
 --------------------------------------------------------
 Autor: Cristian Rodriguez
-/nFecha: 21/09/2025
-/nTema: Mapa 360 Navegacion CATEPS
+Fecha: 21/09/2025
+Tema: Mapa 360 Navegacion CATEPS
 -------------------------------------------------------
 
 Uso de libreria Marzipano
