@@ -1,16 +1,35 @@
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: Arial, sans-serif;
-  display: flex;
+/* Reset y prevención de selección/arrastre */
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  -ms-content-zooming: none;
 }
 
+/* Layout principal */
+html, body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Contenedor Marzipano */
 #viewer {
   flex: 1;
   position: relative;
 }
 
+/* Sidebar */
 #sidebar {
   width: 300px;
   background-color: #f4f4f4;
@@ -19,7 +38,9 @@ body, html {
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
-#sidebar h2 { margin-top: 0; }
+#sidebar h2 {
+  margin-top: 0;
+}
 
 #controls {
   margin-top: 20px;
@@ -33,18 +54,21 @@ body, html {
   cursor: pointer;
 }
 
+/* Hotspots */
 .hotspot-icon {
   width: 32px;
   height: 32px;
   cursor: pointer;
 }
 
+/* Canvas Marzipano */
 #viewer canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
 
+/* Flechas HUD */
 .hud-arrow {
   position: absolute;
   top: 50%;

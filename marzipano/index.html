@@ -2,11 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
   <title>Map360 CATEPS</title>
+  <!-- Reset CSS recomendado por Marzipano -->
+  <link rel="stylesheet" href="//www.marzipano.net/demos/common/reset.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  
+  <!-- Sidebar con información y controles -->
   <div id="sidebar">
     <h2>Información de Escena</h2>
     <div id="scene-info">
@@ -17,12 +21,18 @@
       <button id="zoom-out">-</button>
     </div>
   </div>
+
+  <!-- Contenedor del visor Marzipano -->
   <div id="viewer">
+    <!-- Flechas HUD -->
     <img id="arrow-left" src="img/left.png" class="hud-arrow">
     <img id="arrow-right" src="img/right.png" class="hud-arrow">
   </div>
 
+  <!-- Librería Marzipano local -->
   <script src="lib/marzipano.js"></script>
+  <!-- Lógica de tu proyecto -->
   <script src="index.js"></script>
+
 </body>
 </html>

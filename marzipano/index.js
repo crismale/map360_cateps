@@ -5,12 +5,15 @@ const zoomOutBtn = document.getElementById('zoom-out');
 const arrowLeft = document.getElementById('arrow-left');
 const arrowRight = document.getElementById('arrow-right');
 
+// Inicializar Marzipano
 const viewer = new Marzipano.Viewer(viewerElement);
 
-let currentScene, allScenes, currentView;
+let allScenes = [];
+let currentScene = null;
+let currentView = null;
 let currentIndex = 0;
 
-// Cargar todas las escenas desde backend
+// Fetch escenas desde backend
 async function loadScenes() {
   try {
     const response = await fetch('http://localhost:5000/api/scenes');
@@ -22,33 +25,34 @@ async function loadScenes() {
     }
 
     loadScene(allScenes[currentIndex]);
-  } catch (error) {
-    console.error('Error cargando escenas:', error);
+  } catch (err) {
+    console.error('Error cargando escenas:', err);
     sceneInfo.innerHTML = '<p>Error cargando escenas</p>';
   }
 }
 
-// Renderizar panel lateral
-function renderSidebar(sceneData) {
+// Render panel lateral
+function renderSidebar(scene) {
   sceneInfo.innerHTML = `
-    <h3>${sceneData.description}</h3>
-    <p><strong>ID:</strong> ${sceneData.id_scene}</p>
-    <p><strong>Tipo:</strong> ${sceneData.kind_id}</p>
-    <p><strong>Piso:</strong> ${sceneData.floor_id}</p>
-    <p><strong>Torre:</strong> ${sceneData.tower_id}</p>
-    <p><strong>Orientación:</strong> ${sceneData.orientation_id}</p>
+    <h3>${scene.scene_description}</h3>
+    <p><strong>ID:</strong> ${scene.id_scene}</p>
+    <p><strong>Tipo:</strong> ${scene.name_kind}</p>
+    <p><strong>Piso:</strong> ${scene.name_floor}</p>
+    <p><strong>Torre:</strong> ${scene.name_tower}</p>
+    <p><strong>Orientación:</strong> ${scene.name_orientation}</p>
     <h4>Hotspots:</h4>
-    <ul>${sceneData.hotspots.map(h => `<li>${h.description}</li>`).join('')}</ul>
+    <ul>${scene.hotspots.map(h => `<li>${h.description}</li>`).join('')}</ul>
   `;
 }
 
-// Cargar escena con hotspots
-function loadScene(sceneData) {
-  renderSidebar(sceneData);
+// Cargar y renderizar escena con hotspots
+function loadScene(scene) {
+  renderSidebar(scene);
 
-  const source = Marzipano.ImageUrlSource.fromString(sceneData.imagen_url);
+  // Crear source y geometría
+  const source = Marzipano.ImageUrlSource.fromString(scene.imagen_url);
   const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-  const limiter = Marzipano.RectilinearView.limit.traditional(1024, 120 * Math.PI/180);
+  const limiter = Marzipano.RectilinearView.limit.traditional(1024, 120 * Math.PI / 180);
   currentView = new Marzipano.RectilinearView(null, limiter);
 
   if (currentScene) currentScene.destroy();
@@ -62,16 +66,16 @@ function loadScene(sceneData) {
 
   currentScene.switchTo();
 
-  // Hotspots
-  sceneData.hotspots.forEach(hs => {
+  // Hotspots dinámicos
+  scene.hotspots.forEach(h => {
     const el = document.createElement('img');
-    el.src = `img/${hs.icon_url}`;
+    el.src = h.icon_url; // icono desde Cloudinary
     el.className = 'hotspot-icon';
-    el.title = hs.description;
+    el.title = h.description;
 
     el.addEventListener('click', () => {
-      if (hs.link_scene_id) {
-        const nextScene = allScenes.find(s => s.id_scene === hs.link_scene_id);
+      if (h.link_scene_id) {
+        const nextScene = allScenes.find(s => s.id_scene === h.link_scene_id);
         if (nextScene) {
           currentIndex = allScenes.indexOf(nextScene);
           loadScene(nextScene);
@@ -79,28 +83,30 @@ function loadScene(sceneData) {
       }
     });
 
-    currentScene.hotspotContainer().createHotspot(el, { yaw: hs.yaw, pitch: hs.pitch });
+    currentScene.hotspotContainer().createHotspot(el, { yaw: h.yaw, pitch: h.pitch });
   });
 }
 
 // Controles de zoom
 zoomInBtn.addEventListener('click', () => {
-  const fov = currentView.fov();
-  currentView.setFov(Math.max(fov - 0.1, 0.1));
+  if (!currentView) return;
+  currentView.setFov(Math.max(currentView.fov() - 0.1, 0.1));
 });
 
 zoomOutBtn.addEventListener('click', () => {
-  const fov = currentView.fov();
-  currentView.setFov(Math.min(fov + 0.1, 3.0));
+  if (!currentView) return;
+  currentView.setFov(Math.min(currentView.fov() + 0.1, 3.0));
 });
 
 // Navegación HUD
 arrowLeft.addEventListener('click', () => {
+  if (!allScenes.length) return;
   currentIndex = (currentIndex - 1 + allScenes.length) % allScenes.length;
   loadScene(allScenes[currentIndex]);
 });
 
 arrowRight.addEventListener('click', () => {
+  if (!allScenes.length) return;
   currentIndex = (currentIndex + 1) % allScenes.length;
   loadScene(allScenes[currentIndex]);
 });
