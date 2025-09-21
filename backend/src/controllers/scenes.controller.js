@@ -2,19 +2,11 @@ const Scenes = require('../models/scenes.model');
 
 async function getScenes(req, res) {
   try {
-    const scenes = await Scenes.getAllScenes();
-
-    const scenesWithHotspots = await Promise.all(
-      scenes.map(async scene => {
-        const hotspots = await Scenes.getHotspotsByScene(scene.id);
-        return { ...scene, hotspots };
-      })
-    );
-
-    res.json(scenesWithHotspots);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    const scenes = await Scenes.getAllScenesWithHotspots();
+    res.json(scenes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error retrieving scenes' });
   }
 }
 

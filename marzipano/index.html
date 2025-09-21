@@ -1,15 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Marzipano Project</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map360 CATEPS</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="pano"></div>
-  <div id="scene-info"></div>
+  <div id="sidebar">
+    <h2>Información de Escena</h2>
+    <div id="scene-info">
+      <p>Cargando escena...</p>
+    </div>
+    <div id="controls">
+      <button id="zoom-in">+</button>
+      <button id="zoom-out">-</button>
+    </div>
+  </div>
+  <div id="viewer">
+    <img id="arrow-left" src="img/left.png" class="hud-arrow">
+    <img id="arrow-right" src="img/right.png" class="hud-arrow">
+  </div>
 
-  <script src="libs/marzipano.js"></script>
+  <script src="lib/marzipano.js"></script>
   <script src="index.js"></script>
 </body>
 </html>

@@ -1,75 +1,109 @@
-const panoElement = document.getElementById('pano');
+const viewerElement = document.getElementById('viewer');
 const sceneInfo = document.getElementById('scene-info');
-let sceneObjects = [];
+const zoomInBtn = document.getElementById('zoom-in');
+const zoomOutBtn = document.getElementById('zoom-out');
+const arrowLeft = document.getElementById('arrow-left');
+const arrowRight = document.getElementById('arrow-right');
 
-async function fetchScenes() {
-  const res = await fetch('http://localhost:5000/api/scenes');
-  return await res.json();
-}
+const viewer = new Marzipano.Viewer(viewerElement);
 
-function createHotspot(hotspot, scene, sceneObjects) {
-  const el = document.createElement('img');
-  el.src = `img/${hotspot.type}.png`;
-  el.className = 'hotspot';
-  el.style.position = 'absolute';
-  el.style.left = `${hotspot.x}%`;
-  el.style.top = `${hotspot.y}%`;
-  el.title = hotspot.title;
+let currentScene, allScenes, currentView;
+let currentIndex = 0;
 
-  el.addEventListener('click', () => {
-    if (hotspot.target_scene_id) {
-      const targetSceneObj = sceneObjects.find(s => s.id === hotspot.target_scene_id);
-      if (targetSceneObj) targetSceneObj.scene.switchTo();
+// Cargar todas las escenas desde backend
+async function loadScenes() {
+  try {
+    const response = await fetch('http://localhost:5000/api/scenes');
+    allScenes = await response.json();
+
+    if (!allScenes.length) {
+      sceneInfo.innerHTML = '<p>No hay escenas disponibles.</p>';
+      return;
     }
-  });
 
-  scene.hotspotLayer = scene.hotspotLayer || document.createElement('div');
-  scene.hotspotLayer.className = 'hotspot-layer';
-  scene.hotspotLayer.style.position = 'absolute';
-  scene.hotspotLayer.style.top = '0';
-  scene.hotspotLayer.style.left = '0';
-  scene.hotspotLayer.style.width = '100%';
-  scene.hotspotLayer.style.height = '100%';
-  scene.hotspotLayer.style.pointerEvents = 'none';
-
-  el.style.pointerEvents = 'auto';
-  scene.hotspotLayer.appendChild(el);
-
-  if (!scene.hotspotLayer.parentNode) {
-    panoElement.appendChild(scene.hotspotLayer);
+    loadScene(allScenes[currentIndex]);
+  } catch (error) {
+    console.error('Error cargando escenas:', error);
+    sceneInfo.innerHTML = '<p>Error cargando escenas</p>';
   }
 }
 
-async function init() {
-  const scenesData = await fetchScenes();
-  const viewer = new Marzipano.Viewer(panoElement);
+// Renderizar panel lateral
+function renderSidebar(sceneData) {
+  sceneInfo.innerHTML = `
+    <h3>${sceneData.description}</h3>
+    <p><strong>ID:</strong> ${sceneData.id_scene}</p>
+    <p><strong>Tipo:</strong> ${sceneData.kind_id}</p>
+    <p><strong>Piso:</strong> ${sceneData.floor_id}</p>
+    <p><strong>Torre:</strong> ${sceneData.tower_id}</p>
+    <p><strong>Orientación:</strong> ${sceneData.orientation_id}</p>
+    <h4>Hotspots:</h4>
+    <ul>${sceneData.hotspots.map(h => `<li>${h.description}</li>`).join('')}</ul>
+  `;
+}
 
-  sceneObjects = scenesData.map(s => {
-    const source = Marzipano.ImageUrlSource.fromString(s.image_url);
-    const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-    const limiter = Marzipano.RectilinearView.limit.traditional(1024, 100*Math.PI/180);
-    const view = new Marzipano.RectilinearView(null, limiter);
-    const scene = viewer.createScene({ source, geometry, view });
+// Cargar escena con hotspots
+function loadScene(sceneData) {
+  renderSidebar(sceneData);
 
-    s.hotspots.forEach(hs => createHotspot(hs, scene, sceneObjects));
-    return { id: s.id, scene, hotspots: s.hotspots };
+  const source = Marzipano.ImageUrlSource.fromString(sceneData.imagen_url);
+  const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
+  const limiter = Marzipano.RectilinearView.limit.traditional(1024, 120 * Math.PI/180);
+  currentView = new Marzipano.RectilinearView(null, limiter);
+
+  if (currentScene) currentScene.destroy();
+
+  currentScene = viewer.createScene({
+    source: source,
+    geometry: geometry,
+    view: currentView,
+    pinFirstLevel: true
   });
 
-  viewer.addEventListener('sceneChange', activeScene => {
-    sceneObjects.forEach(obj => {
-      obj.scene.hotspotLayer.style.display = obj.scene === activeScene ? 'block' : 'none';
+  currentScene.switchTo();
+
+  // Hotspots
+  sceneData.hotspots.forEach(hs => {
+    const el = document.createElement('img');
+    el.src = `img/${hs.icon_url}`;
+    el.className = 'hotspot-icon';
+    el.title = hs.description;
+
+    el.addEventListener('click', () => {
+      if (hs.link_scene_id) {
+        const nextScene = allScenes.find(s => s.id_scene === hs.link_scene_id);
+        if (nextScene) {
+          currentIndex = allScenes.indexOf(nextScene);
+          loadScene(nextScene);
+        }
+      }
     });
+
+    currentScene.hotspotContainer().createHotspot(el, { yaw: hs.yaw, pitch: hs.pitch });
   });
-
-  if (sceneObjects.length > 0) {
-    sceneObjects[0].scene.switchTo();
-    sceneObjects[0].scene.hotspotLayer.style.display = 'block';
-  }
-
-  sceneInfo.innerHTML = scenesData.map(s => `
-    <div class="scene-title">${s.name}</div>
-    <div>${s.description}</div>
-  `).join('');
 }
 
-init();
+// Controles de zoom
+zoomInBtn.addEventListener('click', () => {
+  const fov = currentView.fov();
+  currentView.setFov(Math.max(fov - 0.1, 0.1));
+});
+
+zoomOutBtn.addEventListener('click', () => {
+  const fov = currentView.fov();
+  currentView.setFov(Math.min(fov + 0.1, 3.0));
+});
+
+// Navegación HUD
+arrowLeft.addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + allScenes.length) % allScenes.length;
+  loadScene(allScenes[currentIndex]);
+});
+
+arrowRight.addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % allScenes.length;
+  loadScene(allScenes[currentIndex]);
+});
+
+// Inicializar
+loadScenes();
