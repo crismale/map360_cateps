@@ -1,0 +1,25 @@
+{
+  "name": "map360-project",
+  "version": "1.0.0",
+  "description": "Proyecto Map360: Backend con Node/Express/PostgreSQL y frontend con Marzipano",
+  "main": "backend/src/app.js",
+  "scripts": {
+    "start": "node backend/src/app.js",
+    "dev": "nodemon backend/src/app.js",
+    "build-frontend": "echo 'No build required for Marzipano frontend'",
+    "frontend": "live-server marzipano"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.0",
+    "dotenv": "^16.3.1",
+    "cloudinary": "^1.39.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "live-server": "^1.2.2"
+  },
+  "author": "Cristian Rodriguez",
+  "license": "MIT"
+}
