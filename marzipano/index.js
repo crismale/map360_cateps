@@ -12,6 +12,9 @@ const sceneListElement = document.getElementById("sceneList");
 const sidebar = document.getElementById('sidebar');
 const viewerDiv = document.getElementById('viewer');
 const toggleBtn = document.getElementById('toggle-sidebar');
+//const API_BASE = window?.ENV?.API_BASE || "http://localhost:5000";
+const API_BASE = "https://map360-backend.onrender.com";
+
 
 // Inicializar Marzipano 
 const viewer = new Marzipano.Viewer(viewerElement);
@@ -30,11 +33,11 @@ let nextHotspotId = null; // hotspot a seguir
 let sidebarOpen = true;
 let activeRoute = [];
 //let currentStep = 0;
-
+//fetch('http://localhost:5000/api/scenes')
 // Fetch escenas
 async function loadScenes() {
   try {
-    const response = await fetch('http://localhost:5000/api/scenes');
+    const response = await fetch(`${API_BASE}/api/scenes`);
     allScenes = await response.json();
     if (!allScenes.length) {
       sceneInfo.innerHTML = '<p>No hay escenas disponibles.</p>';
@@ -356,7 +359,7 @@ function fillDestinationList() {
 // Modifica loadScenes para rellenar la lista al cargar escenas
 async function loadScenes() {
   try {
-    const response = await fetch('http://localhost:5000/api/scenes');
+    const response = await fetch(`${API_BASE}/api/scenes`);
     allScenes = await response.json();
     if (!allScenes.length) {
       sceneInfo.innerHTML = '<p>No hay escenas disponibles.</p>';
@@ -376,7 +379,7 @@ async function loadScenes() {
 
 async function loadRoutes() {
   try {
-    const response = await fetch("http://localhost:5000/api/routes");
+    const response = await fetch(`${API_BASE}/api/routes`);
     allRoutes = await response.json();
     //console.log("Rutas cargadas",allRoutes);
   } catch (err) {
