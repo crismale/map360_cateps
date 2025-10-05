@@ -17,20 +17,15 @@ const API_BASE = "https://map360-backend.onrender.com";
 
 
 // Inicializar Marzipano 
-const viewer = new Marzipano.Viewer(viewerElement);
 viewerElement.style.width = window.innerWidth + 'px';
 viewerElement.style.height = window.innerHeight + 'px';
+
+const viewer = new Marzipano.Viewer(viewerElement);
+
 window.addEventListener('resize', () => {
   viewerElement.style.width = window.innerWidth + 'px';
   viewerElement.style.height = window.innerHeight + 'px';
-});
-
-viewer.addEventListener('renderComplete', () => {
-  console.log('✅ Marzipano render completado');
-});
-
-viewer.addEventListener('error', (e) => {
-  console.error('❌ Error en Marzipano:', e);
+  viewer.resize();
 });
 
 // Variables globales
@@ -606,7 +601,7 @@ function goToStep(stepIndex) {
   if (stepIndex >= currentRouteSteps.length) {
     const lastStep = currentRouteSteps[currentRouteSteps.length - 1];
     const finalScene = allScenes.find(s => String(s.id_scene) === lastStep.to);
-    console.log("Mostrando escena final de la ruta:", finalScene.scene_description);
+    //console.log("Mostrando escena final de la ruta:", finalScene.scene_description);
     if (finalScene) {
       currentIndex = allScenes.indexOf(finalScene);
       switchScene(finalScene);
@@ -655,7 +650,6 @@ function updateStepHighlight() {
 }
 
 function exitNavigation() {
-  console.log("Saliendo de navegación, paso actual:", nextHotspotId, currentStepIndex, currentRouteSteps);
    // 🧹 1. Quitar el resaltado del hotspot activo (el color azul del siguiente paso)
   document.querySelectorAll(".hotspot-info .hotspot-icon").forEach(icon => {
     icon.style.background = "";
