@@ -56,6 +56,8 @@ let activeRoute = [];
 //fetch('http://localhost:5000/api/scenes')
 // Fetch escenas
 async function loadScenes() {
+  console.log('⏳ Intentando cargar escenas desde el backend...');
+  sceneInfo.innerHTML = '<p>⏳ Cargando datos de las escenas...</p>';
   try {
     const response = await fetch(`${API_BASE}/api/scenes`);
     allScenes = await response.json();
@@ -100,6 +102,7 @@ async function loadScene(scene, retryCount = 0) {
 
     // Si la escena no está cacheada, la creamos
     if (!cachedScenes.has(scene.id_scene)) {
+      console.log('🖼️ URL de la imagen de la escena:', scene.imagen_url); 
       const source = Marzipano.ImageUrlSource.fromString(scene.imagen_url);
       const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
       const limiter = Marzipano.RectilinearView.limit.traditional(1024, 120 * Math.PI / 180);
