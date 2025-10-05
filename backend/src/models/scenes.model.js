@@ -27,14 +27,15 @@ async function getAllScenesWithHotspots() {
   json_agg(
     json_build_object(
       'id_hotspots', h.id_hotspots,
-      'kind', h.kind,
+      'title', h.title,
       'yaw', h.yaw,
       'pitch', h.pitch,
       'description', h.description,
       'link_scene_id', h.link_scene_id,
       'icon_id', h.icon_id,
       'icon_url', i.icon_url,
-      'name_icon', i.name_icon
+      'name_icon', i.name_icon,
+      'rotation', h.rotation
     )
   ) FILTER (WHERE h.id_hotspots IS NOT NULL) AS hotspots
 

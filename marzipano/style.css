@@ -1,84 +1,539 @@
-/* Reset y prevención de selección/arrastre */
+/* Reset + no selección/arrastre */
 * {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   -webkit-user-drag: none;
   -webkit-touch-callout: none;
-  -ms-content-zooming: none;
 }
 
-/* Layout principal */
+/* Layout */
 html, body {
   width: 100%;
   height: 100%;
-  padding: 0;
   margin: 0;
-  font-family: Arial, sans-serif;
   display: flex;
+  font-family: Arial, sans-serif;
   overflow: hidden;
 }
 
-/* Contenedor Marzipano */
 #viewer {
+  top: 0px;
+  left: 280px;
+  right: 0;
+  bottom: 0;
+  transition: left 0.3s ease, width 0.3s ease;
   flex: 1;
-  position: relative;
+  position: absolute;
+  background: #000;
 }
 
 /* Sidebar */
 #sidebar {
-  width: 300px;
-  background-color: #f4f4f4;
-  padding: 20px;
+  position: fixed;
+  top:0;
+  left:0;
+  width: 280px;
+  height: 100%;
+  background: rgba(136, 136, 136, 0.85);
+  border-right: 1px solid #ddd;
+  padding: 10px;
   overflow-y: auto;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+  z-index: 100;
+}
+
+#sidebar.closed {
+  transform: translateX(-100%);
+}
+
+#sidebar.closed ~ #viewer {
+  left: 0;
+}
+
+/* Cuando el sidebar está cerrado */
+#sidebar.closed ~ #titleBar {
+  left: 0;
+}
+
+#toggle-sidebar {
+  position: fixed;
+  top: 50%;
+  left: 290px;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 20px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: left 0.3s ease, transform 0.3s ease,background 0.3s ease;
+  z-index: 110;
+}
+
+#sidebar.closed ~ #toggle-sidebar {
+  left: 10px; /* borde izquierdo de la pantalla */
+  transform: rotate(180deg);
+}
+
+#toggle-sidebar:hover {
+  background: #0056b3;
+}
+
+#sidebar.closed + #toggle-sidebar {
+  left: 10px;
+  transform: rotate(180deg);
+}
+
+#sidebar.hidden {
+  transform: translateX(-100%);
+}
+#viewer.expanded {
+  width: calc(100% - 0px); /* ocupa todo */
 }
 
 #sidebar h2 {
   margin-top: 0;
+  flex: 1;
+  margin: 0;
+  font-size: 25px;
+  font-weight: bold;
 }
 
-#controls {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
+#sidebar h3 {
+  margin-top: 0;
+  flex: 1;
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-#controls button {
-  padding: 10px 15px;
+.label_title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #111; /* o el que prefieras */
+}
+
+.label {
+  padding: 0 10px;
   font-size: 18px;
-  cursor: pointer;
+  font-weight: bold;
+  color: #111; /* o el que prefieras */
 }
 
-/* Hotspots */
+.hotspot-list {
+  list-style-type: disc;  /* viñetas normales redondas */
+  padding-left: 20px;     /* espacio para la viñeta */
+}
+
+.hotspot-list li {
+  margin: 4px 0;
+}
+
+/* Barra superior */
+#titleBar {
+  position: fixed;
+  top: 0;
+  left: 280px; /* deja espacio para sidebar */
+  right: 0;
+  height: 42px;
+  background: rgba(0,0,0,0.7);
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  transition: left 0.3s ease, width 0.3s ease;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  z-index: 105;
+}
+
+#titleBar h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
+  font-weight: normal;
+}
+
+/* Toolbar dentro de la barra */
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.toolbar-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.toolbar-btn img {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+/* Fullscreen toggle */
+#fullscreenToggle img {
+  width: 20px;
+  height: 20px;
+  display: none;
+}
+
+#fullscreenToggle img.off {
+  display: inline;
+}
+
+/* Scene list toggle */
+#sceneListToggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  padding: 5px;
+  background: rgba(255,255,255,0.30);
+  z-index: 1250;
+}
+
+#sceneListToggle .icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 30px;
+  height: 30px;
+}
+
+#sceneListToggle .icon.on {
+  display: none;
+}
+
+#sceneListToggle .icon.off {
+  display: block;
+}
+
+#sceneListToggle.enabled .icon.on {
+  display: block;
+}
+
+#sceneListToggle.enabled .icon.off {
+  display: none;
+}
+
+/* ---------------- Lista de escenas flotante ---------------- */
+.scene-list {
+  position: absolute;
+  top: 42px; /* debajo de la barra superior */
+  left: 0;   /* pegado al borde izquierdo de la pantalla */
+  width: 300px;
+  max-height: calc(2000%);
+  background: rgba(30, 30, 30, 0.85); /* gris oscuro translúcido */
+  color: #fff;
+  list-style: none;
+  margin: 0;
+  padding: 5px 0;
+  display: none; /* oculto por defecto */
+  overflow-y: auto;
+  z-index: 1200;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(4px); /* efecto moderno */
+}
+
+.scene-list.enabled {
+  display: block;
+}
+
+.scene-list li {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: background 0.2s;
+}
+
+.scene-list li:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* Escena activa con 📍 */
+.scene-list li.active {
+  background: rgba(255,255,255,0.25);
+  font-weight: bold;
+  position: relative;
+}
+
+.scene-list li.active::before {
+  content: "📍";
+  margin-right: 8px;
+}
+
+/* Estilos para niveles anidados (torre → piso → escena) */
+.scene-list ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 15px;
+  border-left: 1px solid rgba(255,255,255,0.15);
+}
+
+.scene-list .tower-item {
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #ddd;
+}
+
+.scene-list .floor-item {
+  font-style: italic;
+  color: #aaa;
+}
+
+/* ---------- Hotspots ---------- */
+.hotspot {
+  position: relative;
+}
+
+/* Icono del hotspot */
 .hotspot-icon {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  border-radius: 60%;
+  background: rgb(0, 0, 0,0.6);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hotspot-icon:hover {
+  transform: scale(1.15);
+}
+
+/* Tooltip oculto por defecto */
+.hotspot-tooltip {
+  position: absolute;
+  bottom: 120%; /* encima del icono */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  font-size: 13px;
+  white-space: nowrap;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Flechita del tooltip */
+.hotspot-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(0,0,0,0.85) transparent transparent transparent;
+}
+
+/* Mostrar tooltip al hover */
+.hotspot:hover .hotspot-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* Fallback: hotspot sin imagen → círculo simple */
+.hotspot.no-icon {
   width: 32px;
   height: 32px;
+  background: #ff5252;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Hotspot de información */
+.hotspot-info {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Icono circular */
+.hotspot-info-icon {
+  background: rgba(50, 60, 80, 0.9);
+  color: #fff;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Título aparece al hover si no está expandido */
+.hotspot-info:hover .hotspot-info-title {
+  display: block;
+}
+
+/* Caja de título */
+.hotspot-info-title {
+  background: rgba(50, 60, 80, 0.95);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-top: 4px;
+  white-space: nowrap;
+  font-size: 14px;
+  display: none;
+}
+
+/* Caja expandida */
+.hotspot-info-desc {
+  background: rgba(50, 60, 80, 0.95);
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  max-width: 260px;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.4;
+  display: none;
+}
+
+.hotspot-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.hotspot-info-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
   cursor: pointer;
 }
 
-/* Canvas Marzipano */
+/* Hotspot de navegación */
+.hotspot-nav {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.hotspot-nav:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.hotspot-next {
+  border: 3px solid yellow !important;
+  border-radius: 50%;
+  box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.hotspot.route-active {
+  background: rgba(255, 215, 0, 0.8); /* dorado */
+  border-radius: 8px;
+}
+
+/* Estilos para el contenedor de búsqueda */
+.search-input-wrapper {
+    position: relative; /* Esencial para que el 'X' se posicione con respecto a este div */
+    display: inline-block; /* Ajusta el tamaño al del input */
+    width: 90%; /* O el ancho que necesites */
+}
+
+/* Estilo para el input dentro del contenedor */
+.input-with-clear {
+    width: 100%;
+    /* Dejamos un espacio a la derecha para que no se superponga con el 'X' */
+    padding-right: 20px; 
+    box-sizing: border-box; /* Asegura que el padding se incluya en el ancho total */
+    height: 35px; /* Altura de ejemplo */
+}
+
+/* Estilo para el botón de borrar (la 'X') */
+.clear-button {
+    position: absolute;
+    /* Ajusta estos valores si tu input tiene un padding o margen diferente */
+    right: 5px; 
+    top: 50%;
+    transform: translateY(-50%); /* Centra verticalmente */
+    
+    cursor: pointer;
+    color: #999; /* Color gris suave */
+    font-size: 1.2em;
+    font-weight: bold;
+    line-height: 1;
+    display: none; /* Inicialmente oculto */
+    user-select: none; /* Previene la selección de texto al hacer clic */
+    padding: 0 5px; /* Área de clic un poco más grande */
+}
+
+.clear-button:hover {
+    color: #555; /* Color más oscuro al pasar el ratón */
+}
+
+/*
+  ESTILOS NECESARIOS (Añadir a tu archivo CSS)
+*/
+
+/* Define el estilo de la línea completa del paso activo */
+#stepsList li.active-step {
+    font-weight: bold;       /* Hace el texto en negrita (simula <b>) */
+    /*color: #0056b3;          /* Opcional: Cambia el color del texto */
+    background-color: #e0f0ff; /* Opcional: Resalta el fondo */
+    padding-left: 10px;      /* Asegura que haya espacio para el indicador */
+    border-left: 3px solid #0056b3; /* Opcional: una barra lateral para destacar */
+}
+
+/* Opcional: Usar el pseudo-elemento ::before para añadir el emoji ▶️ */
+#stepsList li.active-step::before {
+    content: "▶️ ";        /* Añade el emoji antes del texto */
+    margin-right: 5px;       /* Espacio entre el emoji y el texto */
+    /* Si estás usando la barra lateral de arriba, puedes omitir esto */
+}
+
+/* Canvas viewer */
 #viewer canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
-
-/* Flechas HUD */
-.hud-arrow {
-  position: absolute;
-  top: 50%;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  transform: translateY(-50%);
-  opacity: 0.7;
-  z-index: 10;
-}
-
-#arrow-left { left: 10px; }
-#arrow-right { right: 10px; }

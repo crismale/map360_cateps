@@ -2,37 +2,71 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Map360 CATEPS</title>
-  <!-- Reset CSS recomendado por Marzipano -->
+  <style>@-ms-viewport { width: device-width; }</style>
+  <!-- Reset CSS -->
   <link rel="stylesheet" href="//www.marzipano.net/demos/common/reset.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  
-  <!-- Sidebar con información y controles -->
+  <!-- Sidebar -->
   <div id="sidebar">
-    <h2>Información de Escena</h2>
+    <h2>📍Ubicación Actual:</h2><br>
     <div id="scene-info">
-      <p>Cargando escena...</p>
+            <p>Cargando escena...</p>
     </div>
-    <div id="controls">
-      <button id="zoom-in">+</button>
-      <button id="zoom-out">-</button>
+    <br><hr><br>
+    
+    <div id="navigation">
+      <h3>🧭 Navegación</h3><br>
+      <p><label for="destination"><span class="label">Destino:<br></span></label></p><br>
+      <div class="search-input-wrapper">
+        <input 
+        type="text" 
+        id="destination" 
+        placeholder="Escribe o selecciona una escena..." 
+        list="scene-list"
+        class="input-with-clear"/>
+        <span class="clear-button" id="clear-destination-btn">&times;</span>
+      </div><br><br>
+
+      <!-- Lista desplegable con escenas -->
+      <datalist id="scene-list"></datalist>
+
+      <button id="btn-ruta">Indicaciones ➡️</button>
+      <button id="btn-clear-ruta" style="display:none;">Salir</button>
     </div>
   </div>
 
-  <!-- Contenedor del visor Marzipano -->
-  <div id="viewer">
-    <!-- Flechas HUD -->
-    <img id="arrow-left" src="img/left.png" class="hud-arrow">
-    <img id="arrow-right" src="img/right.png" class="hud-arrow">
+  <!-- Viewer -->
+  <div id="viewer"></div>
+  <button id="toggle-sidebar" title="Cerrar barra lateral">⮜</button>
+  <!-- Barra superior -->
+  <div id="titleBar">
+    <h2 class="sceneName">Cargando...</h2>
+    <div id="toolbar">
+      <!-- <button id="arrow-left" class="toolbar-btn">⟨</button> -->
+      <button id="zoom-in" class="toolbar-btn"><img src="img/plus.png" alt="Zoom In"></button>
+      <button id="zoom-out" class="toolbar-btn"><img src="img/minus.png" alt="Zoom In"></button>
+      <!-- <button id="arrow-right" class="toolbar-btn">⟩</button> -->
+      <a href="javascript:void(0)" id="fullscreenToggle" title="Pantalla completa">
+        <img class="icon off" src="img/fullscreen.png" alt="Pantalla completa">
+        <img class="icon on" src="img/windowed.png" alt="Salir de pantalla completa">
+      </a>
+      <a href="javascript:void(0)" id="sceneListToggle">
+        <img class="icon off" src="img/expand.png" alt="Abrir lista">
+        <img class="icon on" src="img/collapse.png" alt="Cerrar lista">
+      </a>
+      <!-- Lista de escenas (se muestra/oculta con el botón expand/collapse) -->
+      <ul id="sceneList" class="scene-list"></ul>
+    </div>
   </div>
 
-  <!-- Librería Marzipano local -->
+  <!-- Scripts -->
+  <script src="//www.marzipano.net/demos/common/screenfull.js"></script>
+  <script src="//www.marzipano.net/demos/common/bowser.js"></script>
   <script src="lib/marzipano.js"></script>
-  <!-- Lógica de tu proyecto -->
   <script src="index.js"></script>
-
 </body>
 </html>
