@@ -568,7 +568,7 @@ toggleBtn.addEventListener('click', () => {
   sidebarOpen = !sidebarOpen;
 
   // Cambiar icono e información
-  toggleBtn.textContent = sidebarOpen ? '⮜' : '⮞';
+  toggleBtn.textContent = sidebarOpen ? '◀' : '▶'; 
   toggleBtn.title = sidebarOpen ? 'Cerrar barra lateral' : 'Abrir barra lateral';
   // Ajustar posición del visor (solo por seguridad si no aplica CSS)
   viewerDiv.style.left = sidebarOpen ? '280px' : '0';
