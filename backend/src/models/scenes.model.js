@@ -51,7 +51,8 @@ GROUP BY
   s.kind_id, k.name_kind,
   s.floor_id, f.name_floor,
   s.tower_id, t.name_tower,
-  s.orientation_id, o.name_orientation;
+  s.orientation_id, o.name_orientation
+  ORDER BY s.id_scene ASC;
   `;
 
   const res = await db.query(query);

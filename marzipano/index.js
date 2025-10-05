@@ -12,7 +12,6 @@ const sceneListElement = document.getElementById("sceneList");
 const sidebar = document.getElementById('sidebar');
 const viewerDiv = document.getElementById('viewer');
 const toggleBtn = document.getElementById('toggle-sidebar');
-//const API_BASE = window?.ENV?.API_BASE || "http://localhost:5000";
 const API_BASE = "https://map360-backend.onrender.com";
 
 
@@ -22,22 +21,11 @@ viewerElement.style.height = window.innerHeight + 'px';
 
 const viewer = new Marzipano.Viewer(viewerElement);
 
-viewer.addEventListener('error', (e) => {
-    // Si hay un error, este mensaje SÍ debería aparecer en tu consola remota.
-    console.error('❌ Error fatal en Marzipano:', e);
-});
-
-// Este es el evento que NO ves. Si aparece, el problema es CSS (algo lo tapa). 
-// Si NO aparece, el problema es la inicialización/carga de la escena.
-viewer.addEventListener('renderComplete', () => {
-    console.log('✅ Marzipano render completado');
-});
-
-window.addEventListener('resize', () => {
-  viewerElement.style.width = window.innerWidth + 'px';
-  viewerElement.style.height = window.innerHeight + 'px';
-  viewer.resize();
-});
+// window.addEventListener('resize', () => {
+//   viewerElement.style.width = window.innerWidth + 'px';
+//   viewerElement.style.height = window.innerHeight + 'px';
+//   viewer.resize();
+// });
 
 // Variables globales
 let allScenes = [];
@@ -52,11 +40,8 @@ let currentStepIndex = 0;
 let nextHotspotId = null; // hotspot a seguir
 let sidebarOpen = true;
 let activeRoute = [];
-//let currentStep = 0;
-//fetch('http://localhost:5000/api/scenes')
-// Fetch escenas
+
 async function loadScenes() {
-  console.log('⏳ Intentando cargar escenas desde el backend...');
   sceneInfo.innerHTML = '<p>⏳ Cargando datos de las escenas...</p>';
   try {
     const response = await fetch(`${API_BASE}/api/scenes`);
@@ -65,7 +50,19 @@ async function loadScenes() {
       sceneInfo.innerHTML = '<p>No hay escenas disponibles.</p>';
       return;
     }
-    await loadScene(allScenes[currentIndex]);
+        // 🔹 Definir escena inicial por ID
+    const initialSceneId = 0; // ← Cambia este valor al id_scene que quieres mostrar al inicio
+    const initialScene = allScenes.find(s => s.id_scene === initialSceneId);
+
+    if (initialScene) {
+      currentIndex = allScenes.indexOf(initialScene);
+      await loadScene(initialScene);
+      console.log(`✅ Escena inicial cargada: ${initialScene.scene_description} (ID: ${initialSceneId})`);
+    } else {
+      console.warn(`⚠️ Escena con id_scene=${initialSceneId} no encontrada. Cargando la primera.`);
+      await loadScene(allScenes[currentIndex]);
+    }
+    //await loadScene(allScenes[currentIndex]);
     renderSceneList();
   } catch (err) {
     console.error('Error cargando escenas:', err);
@@ -102,7 +99,6 @@ async function loadScene(scene, retryCount = 0) {
 
     // Si la escena no está cacheada, la creamos
     if (!cachedScenes.has(scene.id_scene)) {
-      console.log('🖼️ URL de la imagen de la escena:', scene.imagen_url); 
       const source = Marzipano.ImageUrlSource.fromString(scene.imagen_url);
       const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
       const limiter = Marzipano.RectilinearView.limit.traditional(1024, 120 * Math.PI / 180);
@@ -404,7 +400,6 @@ async function loadRoutes() {
   try {
     const response = await fetch(`${API_BASE}/api/routes`);
     allRoutes = await response.json();
-    //console.log("Rutas cargadas",allRoutes);
   } catch (err) {
     console.error("Error cargando rutas:", err);
   }
