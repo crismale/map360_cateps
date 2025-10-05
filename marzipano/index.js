@@ -22,14 +22,21 @@ viewerElement.style.height = window.innerHeight + 'px';
 
 const viewer = new Marzipano.Viewer(viewerElement);
 
+viewer.addEventListener('error', (e) => {
+    // Si hay un error, este mensaje SÍ debería aparecer en tu consola remota.
+    console.error('❌ Error fatal en Marzipano:', e);
+});
+
+// Este es el evento que NO ves. Si aparece, el problema es CSS (algo lo tapa). 
+// Si NO aparece, el problema es la inicialización/carga de la escena.
+viewer.addEventListener('renderComplete', () => {
+    console.log('✅ Marzipano render completado');
+});
+
 window.addEventListener('resize', () => {
   viewerElement.style.width = window.innerWidth + 'px';
   viewerElement.style.height = window.innerHeight + 'px';
   viewer.resize();
-});
-
-viewer.addEventListener('renderComplete', () => {
-  console.log('✅ Marzipano render completado');
 });
 
 // Variables globales
