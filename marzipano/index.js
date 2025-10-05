@@ -18,6 +18,12 @@ const API_BASE = "https://map360-backend.onrender.com";
 
 // Inicializar Marzipano 
 const viewer = new Marzipano.Viewer(viewerElement);
+viewerElement.style.width = window.innerWidth + 'px';
+viewerElement.style.height = window.innerHeight + 'px';
+window.addEventListener('resize', () => {
+  viewerElement.style.width = window.innerWidth + 'px';
+  viewerElement.style.height = window.innerHeight + 'px';
+});
 
 // Variables globales
 let allScenes = [];

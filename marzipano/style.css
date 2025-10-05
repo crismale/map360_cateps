@@ -11,9 +11,11 @@ html, body {
   width: 100%;
   height: 100%;
   margin: 0;
-  display: flex;
+  padding: 0;
+  /*display: flex;*/
   font-family: Arial, sans-serif;
-  overflow: hidden;
+  overflow: auto;
+  overscroll-behavior: none;
 }
 
 #viewer {
@@ -21,10 +23,13 @@ html, body {
   left: 280px;
   right: 0;
   bottom: 0;
+  width: auto;
+  height: 100%;
   transition: left 0.3s ease, width 0.3s ease;
-  flex: 1;
-  position: absolute;
-  background: #000;
+  /*flex: 1;*/
+  position: fixed;
+  background: #ff0000;
+  z-index: 9999;
 }
 
 /* Sidebar */
@@ -531,9 +536,40 @@ html, body {
     /* Si estás usando la barra lateral de arriba, puedes omitir esto */
 }
 
+@media (max-width: 768px) {
+  #sidebar {
+    width: 240px;
+  }
+
+  #toggle-sidebar {
+    left: 250px;
+    padding: 15px 8px;
+  }
+
+  #sidebar.closed ~ #toggle-sidebar {
+    left: 10px;
+  }
+
+  #viewer {
+    left: 0 !important;
+  }
+
+  #titleBar {
+    left: 0 !important;
+  }
+}
+
 /* Canvas viewer */
 #viewer canvas {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+html, body, #viewer {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
