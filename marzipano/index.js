@@ -28,6 +28,10 @@ window.addEventListener('resize', () => {
   viewer.resize();
 });
 
+viewer.addEventListener('renderComplete', () => {
+  console.log('✅ Marzipano render completado');
+});
+
 // Variables globales
 let allScenes = [];
 let cachedScenes = new Map(); // Cache de escenas ya creadas
