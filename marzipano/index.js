@@ -25,6 +25,14 @@ window.addEventListener('resize', () => {
   viewerElement.style.height = window.innerHeight + 'px';
 });
 
+viewer.addEventListener('renderComplete', () => {
+  console.log('✅ Marzipano render completado');
+});
+
+viewer.addEventListener('error', (e) => {
+  console.error('❌ Error en Marzipano:', e);
+});
+
 // Variables globales
 let allScenes = [];
 let cachedScenes = new Map(); // Cache de escenas ya creadas
