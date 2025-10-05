@@ -27,6 +27,42 @@ const viewer = new Marzipano.Viewer(viewerElement);
 //   viewer.resize();
 // });
 
+// =================== AUTOROTATE ===================
+const autorotate = Marzipano.autorotate({
+  yawSpeed: 0.03,          // velocidad de rotación horizontal
+  targetPitch: 0,          // mantiene la vista centrada verticalmente
+  targetFov: Math.PI / 2   // campo de visión (FOV)
+});
+
+// Habilitar o no según configuración (puedes dejarlo fijo en true)
+const autorotateEnabled = true;
+
+// Si quieres un botón de toggle, asegúrate de tener uno en el HTML con id="autorotateToggle"
+// <button id="autorotateToggle">⟳ Autorotate</button>
+const autorotateToggleElement = document.getElementById('autorotateToggle');
+
+if (autorotateEnabled) {
+  viewer.startMovement(autorotate);
+  viewer.setIdleMovement(3000, autorotate); // empieza después de 3 segundos de inactividad
+  if (autorotateToggleElement) autorotateToggleElement.classList.add('enabled');
+}
+
+if (autorotateToggleElement) {
+  autorotateToggleElement.addEventListener('click', () => {
+    if (autorotateToggleElement.classList.contains('enabled')) {
+      viewer.stopMovement();
+      viewer.setIdleMovement(Infinity);
+      autorotateToggleElement.classList.remove('enabled');
+    } else {
+      viewer.startMovement(autorotate);
+      viewer.setIdleMovement(3000, autorotate);
+      autorotateToggleElement.classList.add('enabled');
+    }
+  });
+}
+
+// =================== GESTIÓN DE ESCENAS Y HOTSPOTS ===================
+
 // Variables globales
 let allScenes = [];
 let cachedScenes = new Map(); // Cache de escenas ya creadas
