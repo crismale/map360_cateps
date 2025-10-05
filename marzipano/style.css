@@ -546,16 +546,20 @@ html, body {
 
 @media (max-width: 768px) {
   #sidebar {
+    top:50px;
+    left: auto;
     width: 240px;
   }
 
   #toggle-sidebar {
     left: 250px;
     padding: 15px 8px;
+    top: 50%;
   }
 
   #sidebar.closed ~ #toggle-sidebar {
     left: 10px;
+    top: 50%;
   }
 
   #viewer {
@@ -563,6 +567,7 @@ html, body {
   }
 
   #titleBar {
+    height: 50px;
     left: 0 !important;
   }
 }
