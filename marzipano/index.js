@@ -290,20 +290,28 @@ document.getElementById("aletorio").addEventListener("click", () => {
   randomModeActive = !randomModeActive; // alternar modo ON/OFF
 
   const btn = document.getElementById("aletorio");
+  const tooltip = btn.nextElementSibling; // tooltip span
+  
   if (randomModeActive) {
     btn.classList.add("enabled");
-    btn.style.backgroundColor = "#4CAF50";
+    btn.title = "Desactivar aleatorio activado";
+    tooltip.textContent = "Desactivar aleatorio activado";
+    tooltip.classList.add("active");   
+    //btn.style.backgroundColor = "#4CAF50";
     //btn.textContent = "⟳ Modo Aleatorio (ON)";
-    //console.log("🎲 Modo Aleatorio ACTIVADO");
+    //console.log("Modo Aleatorio ACTIVADO");
 
     // Iniciar cambio aleatorio
     startRandomSceneRotation();
 
   } else {
     btn.classList.remove("enabled");
-    btn.style.backgroundColor = "";
+    btn.title = "Activar modo aleatorio";
+    tooltip.textContent = "Activar modo aleatorio";
+    tooltip.classList.remove("active");
+    //btn.style.backgroundColor = "";
     //btn.textContent = "⟳ Modo Aleatorio (OFF)";
-    //console.log("🛑 Modo Aleatorio DESACTIVADO");
+    //console.log("Modo Aleatorio DESACTIVADO");
 
     // Detener temporizador
     clearTimeout(window.autoSceneTimer);

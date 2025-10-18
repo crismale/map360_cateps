@@ -12,30 +12,43 @@
 <body>
   <!-- Sidebar -->
   <div id="sidebar">
-    <h2>📍Ubicación Actual:</h2><br>
-    <div id="scene-info">
-            <p>Cargando escena...</p>
+    <!-- Contenedor scrollable -->
+    <div id="sidebar-content">
+      <h2>📍Ubicación Actual:</h2><br>
+      <div id="scene-info">
+              <p>Cargando escena...</p>
+      </div>
+      <br><hr><br>
+      
+      <div id="navigation">
+        <h3>🧭 Navegación</h3><br>
+        <p><label for="destination"><span class="label">Destino:<br></span></label></p><br>
+        <div class="search-input-wrapper">
+          <input 
+          type="text" 
+          id="destination" 
+          placeholder="Escribe o selecciona una escena..." 
+          list="scene-list"
+          class="input-with-clear"/>
+          <span class="clear-button" id="clear-destination-btn">&times;</span>
+        </div><br><br>
+
+        <!-- Lista desplegable con escenas -->
+        <datalist id="scene-list"></datalist>
+
+        <button id="btn-ruta">Indicaciones ➡️</button><br>
+        <button id="btn-clear-ruta" style="display:none;">Salir</button><br>
+      </div>
     </div>
-    <br><hr><br>
-    
-    <div id="navigation">
-      <h3>🧭 Navegación</h3><br>
-      <p><label for="destination"><span class="label">Destino:<br></span></label></p><br>
-      <div class="search-input-wrapper">
-        <input 
-        type="text" 
-        id="destination" 
-        placeholder="Escribe o selecciona una escena..." 
-        list="scene-list"
-        class="input-with-clear"/>
-        <span class="clear-button" id="clear-destination-btn">&times;</span>
-      </div><br><br>
 
-      <!-- Lista desplegable con escenas -->
-      <datalist id="scene-list"></datalist>
-
-      <button id="btn-ruta">Indicaciones ➡️</button>
-      <button id="btn-clear-ruta" style="display:none;">Salir</button>
+    <div id="logo"><br><img src="img/logo_eps.png"> <br>
+      Demo - Map360 CATEPS<br>
+      Creado por Cristian M. Rodríguez Muyulema<br>
+      Máster Universitario en Sistemas Inteligentes de Transportes y Energía<br>
+      <a href="https://github.com/crismale/map360_cateps.git" target="_blank">
+        <img src="img/GitHub-Logo.png" alt="GitHub" class="github-logo">
+      </a>
+      © 2025 Universidad de Sevilla - Escuela Politécnica Superior
     </div>
   </div>
 
@@ -47,14 +60,33 @@
     <h2 class="sceneName">Cargando...</h2>
     <div id="toolbar">
       <!-- <button id="arrow-left" class="toolbar-btn">⟨</button> -->
-      <button id="zoom-in" class="toolbar-btn"><img src="img/plus.png" alt="Zoom In"></button>
-      <button id="zoom-out" class="toolbar-btn"><img src="img/minus.png" alt="Zoom In"></button>
-      <button id="aletorio" class="toolbar-btn"><img src="img/play.png" alt="Zoom In"></button>
-      <!--<button id="aletorio" class="toolbar-btn">⟳ Modo Aleatorio (OFF)</button>-->
-      <a href="javascript:void(0)" id="fullscreenToggle" title="Pantalla completa">
-        <img class="icon off" src="img/fullscreen.png" alt="Pantalla completa">
-        <img class="icon on" src="img/windowed.png" alt="Salir de pantalla completa">
-      </a>
+      <div class="tooltip">
+        <button id="zoom-in" class="toolbar-btn">
+          <img src="img/plus.png" alt="Zoom In"></button>
+        <span class="tooltiptext">Acercar escena</span>
+      </div>
+
+      <div class="tooltip">
+        <button id="zoom-out" class="toolbar-btn">
+          <img src="img/minus.png" alt="Zoom Out"></button>
+        <span class="tooltiptext">Alejar escena</span>
+      </div>
+
+      <div class="tooltip">
+        <button id="aletorio" class="toolbar-btn" title="Activar modo aleatorio">
+          <img src="img/play.png" alt="Modo Aleatorio"></button>
+        <span class="tooltiptext">Activar modo aleatorio</span>
+      </div>
+
+        <!--<button id="aletorio" class="toolbar-btn">⟳ Modo Aleatorio (OFF)</button>-->
+      <div class="tooltip">  
+        <a href="javascript:void(0)" id="fullscreenToggle" title="Pantalla completa">
+          <img class="icon off" src="img/fullscreen.png" alt="Pantalla completa">
+          <img class="icon on" src="img/windowed.png" alt="Salir de pantalla completa">
+        </a>
+        <span class="tooltiptext">Modo Pantalla Completa</span>
+      </div>
+      
       <a href="javascript:void(0)" id="sceneListToggle">
         <img class="icon off" src="img/expand.png" alt="Abrir lista">
         <img class="icon on" src="img/collapse.png" alt="Cerrar lista">
