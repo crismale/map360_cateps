@@ -111,6 +111,12 @@ async function loadScenes() {
       currentIndex = 0;
       await loadScene(allScenes[0]);
     }
+    
+    // Limpiar la URL para que quede como la original sin parámetros
+    if (sceneIdFromUrl !== null) {
+      history.replaceState(null, '', window.location.pathname);
+      console.log('🔹 URL limpiada:', window.location.href);
+    }
 
     // Renderizar lista de escenas, autocompletado y rutas
     renderSceneList();
