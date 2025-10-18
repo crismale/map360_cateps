@@ -14,6 +14,10 @@ const sidebar = document.getElementById('sidebar');
 const viewerDiv = document.getElementById('viewer');
 const toggleBtn = document.getElementById('toggle-sidebar');
 const API_BASE = "https://map360-backend.onrender.com";
+// // Obtener el parámetro 'id' de la URL
+const urlParams = new URLSearchParams(window.location.search);
+const sceneIdFromUrl = urlParams.get('id'); // esto devuelve "10" si la URL es ?id=10
+//console.log('sceneIdFromUrl:', sceneIdFromUrl);
 
 
 // Inicializar Marzipano 
@@ -74,32 +78,51 @@ let randomModeActive = false; // estado del modo aleatorio
 
 async function loadScenes() {
   sceneInfo.innerHTML = '<p>⏳ Cargando datos de las escenas...</p>';
+
   try {
     const response = await fetch(`${API_BASE}/api/scenes`);
     allScenes = await response.json();
+
     if (!allScenes.length) {
       sceneInfo.innerHTML = '<p>No hay escenas disponibles.</p>';
       return;
     }
-        // 🔹 Definir escena inicial por ID
-    const initialSceneId = 0; // ← Cambia este valor al id_scene que quieres mostrar al inicio
-    const initialScene = allScenes.find(s => s.id_scene === initialSceneId);
 
+    // Escena inicial por defecto
+    let initialSceneId = allScenes[0].id_scene;
+
+    if (sceneIdFromUrl !== null) {
+      // Convertir todo a string para evitar problemas
+      const sceneIdStr = String(sceneIdFromUrl);
+      const sceneExists = allScenes.find(s => String(s.id_scene) === sceneIdStr);
+      if (sceneExists) initialSceneId = sceneExists.id_scene;
+      //console.log(`🔹 Escena inicial desde URL: id_scene=${initialSceneId}`);
+    }
+
+    // Buscar la escena
+    const initialScene = allScenes.find(s => s.id_scene == initialSceneId);
+    //console.log('initialScene encontrada:', initialScene);
     if (initialScene) {
       currentIndex = allScenes.indexOf(initialScene);
       await loadScene(initialScene);
-      console.log(`✅ Escena inicial cargada: ${initialScene.scene_description} (ID: ${initialSceneId})`);
+      //console.log(`✅ Escena inicial cargada: ${initialScene.scene_description}`);
     } else {
       console.warn(`⚠️ Escena con id_scene=${initialSceneId} no encontrada. Cargando la primera.`);
-      await loadScene(allScenes[currentIndex]);
+      currentIndex = 0;
+      await loadScene(allScenes[0]);
     }
-    //await loadScene(allScenes[currentIndex]);
+
+    // Renderizar lista de escenas, autocompletado y rutas
     renderSceneList();
+    fillDestinationList();
+    await loadRoutes();
+
   } catch (err) {
     console.error('Error cargando escenas:', err);
     sceneInfo.innerHTML = '<p>Error cargando escenas</p>';
   }
 }
+
 
 // Render sidebar + título
 function renderSidebar(scene) {
@@ -486,23 +509,23 @@ function fillDestinationList() {
 }
 
 // Modifica loadScenes para rellenar la lista al cargar escenas
-async function loadScenes() {
-  try {
-    const response = await fetch(`${API_BASE}/api/scenes`);
-    allScenes = await response.json();
-    if (!allScenes.length) {
-      sceneInfo.innerHTML = '<p>No hay escenas disponibles.</p>';
-      return;
-    }
-    await loadScene(allScenes[currentIndex]);
-    renderSceneList();
-    fillDestinationList();   // 👈 aquí rellenamos el datalist
-    await loadRoutes(); 
-  } catch (err) {
-    console.error('Error cargando escenas:', err);
-    sceneInfo.innerHTML = '<p>Error cargando escenas</p>';
-  }
-}
+// async function loadScenes() {
+//   try {
+//     const response = await fetch(`${API_BASE}/api/scenes`);
+//     allScenes = await response.json();
+//     if (!allScenes.length) {
+//       sceneInfo.innerHTML = '<p>No hay escenas disponibles.</p>';
+//       return;
+//     }
+//     await loadScene(allScenes[currentIndex]);
+//     renderSceneList();
+//     fillDestinationList();   // 👈 aquí rellenamos el datalist
+//     await loadRoutes(); 
+//   } catch (err) {
+//     console.error('Error cargando escenas:', err);
+//     sceneInfo.innerHTML = '<p>Error cargando escenas</p>';
+//   }
+// }
 
 // =================== RUTAS DINÁMICAS MULTI-SALTO ===================
 
@@ -629,6 +652,10 @@ document.getElementById("btn-ruta").addEventListener("click", () => {
   //console.log("Ruta calculada:", startId, "→", endId, path);
 
   showRouteInstructions(path);
+  // Mostrar botones de navegación
+  document.getElementById("btn-forward").style.display = "inline-block";
+  document.getElementById("btn-backward").style.display = "inline-block";
+  document.getElementById("btn-clear-ruta").style.display = "inline-block";
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -666,6 +693,25 @@ document.getElementById("btn-clear-ruta").addEventListener("click", () => {
   renderSidebar(allScenes[currentIndex]);
   document.getElementById("btn-clear-ruta").style.display = "none";
   document.getElementById("destination").value = "";
+  exitNavigation();
+  // Ocultar botones de navegación
+  document.getElementById("btn-forward").style.display = "none";
+  document.getElementById("btn-backward").style.display = "none";
+});
+
+// Navegación paso a paso
+document.getElementById("btn-forward").addEventListener("click", () => {
+    const nextIndex = currentStepIndex + 1;
+    goToStep(nextIndex); // reutiliza tu función existente
+});
+
+document.getElementById("btn-backward").addEventListener("click", () => {
+    if (currentStepIndex > 0) {  // Control: solo si no es la primera escena
+        const prevIndex = currentStepIndex - 1;
+        goToStep(prevIndex); // reutiliza tu función existente
+    } else {
+        //console.log("Estás en la primera escena"); // o alert, o simplemente no hacer nada
+    }
 });
 
 toggleBtn.addEventListener('click', () => {
@@ -714,8 +760,7 @@ function renderNavigationSidebar() {
           <p><small><span style="color:blue">(${step.reason || "continuar"})</span></small></p><br>
         </li>
       `).join("")}
-    </ul><br>
-    <button onclick="exitNavigation()">❌ Salir navegación</button>
+    </ul>
   `;
 }
 
@@ -794,6 +839,12 @@ function exitNavigation() {
   const destinationInput = document.getElementById("destination");
   const btnRuta = document.getElementById("btn-ruta");
   const clearButton = document.getElementById('clear-destination-btn');
+  const btnnext=document.getElementById("btn-forward");
+  const btnprev=document.getElementById("btn-backward");
+  const btnclear=document.getElementById("btn-clear-ruta");
+  btnnext.style.display="none";
+  btnprev.style.display="none";
+  btnclear.style.display="none";
   destinationInput.disabled = false;
   destinationInput.value = "";
   btnRuta.disabled = false;
@@ -902,48 +953,6 @@ function highlightActiveHotspot(scene) {
     }
   });
 }
-
-
-
-// function highlightActiveHotspot(scene) {
-//   const hotspotEls = document.querySelectorAll(".hotspot-info");
-//   //Resetear todos los hotspots de navegación
-//   hotspotEls.forEach(el => {
-//     el.querySelector(".hotspot-icon")?.style.removeProperty("background");
-//     el.querySelector(".hotspot-icon")?.style.removeProperty("border-radius");
-//     el.querySelector(".hotspot-icon")?.style.removeProperty("transition");
-//     // Habilitar clicks por defecto
-//     const h = scene.hotspots?.find(h => h.title === el.querySelector(".hotspot-info-title").textContent);
-//     if (h && h.icon_id === 2) el.style.pointerEvents = "auto";
-//   });
-
-//   const step = currentRouteSteps[currentStepIndex];
-//   if (!step) return;
-
-//   const hotspotTarget = scene.hotspots?.find(h => h.id_hotspots === step.hotspot_id);
-//   if (!hotspotTarget) return;
-
-//   hotspotEls.forEach(el => {
-//     const title = el.querySelector(".hotspot-info-title");
-//     if (title && title.textContent === hotspotTarget.title) {
-//       const icon = el.querySelector(".hotspot-icon");
-//       if (icon) {
-//         icon.style.transition = "background 0.3s";
-//         icon.style.background = "rgba(0,128,255,0.6)";
-//         icon.style.borderRadius = "50%";
-//       }
-
-//       // 🔒 Bloquear todos los demás hotspots de navegación
-//       // hotspotEls.forEach(otherEl => {
-//       //   const otherTitle = otherEl.querySelector(".hotspot-info-title");
-//       //   if (otherTitle && otherTitle.textContent !== hotspotTarget.title) {
-//       //     const h = scene.hotspots?.find(h => h.title === otherTitle.textContent);
-//       //     if (h && h.icon_id === 2) otherEl.style.pointerEvents = "none";
-//       //   }
-//       // });
-//     }
-//   });
-// }
 
 // Init
 loadScenes();

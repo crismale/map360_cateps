@@ -142,7 +142,7 @@ html, body {
   margin-top: auto; /* empuja hacia abajo */
   width: 100%;
   text-align: center;
-  border-top: 2px solid rgba(255, 255, 255, 0.2); /* opcional: separador visual */
+  /*border-top: 2px solid rgba(255, 255, 255, 0.2); /* opcional: separador visual */
   font-weight: bold;
   font-size: 10px;
   line-height: 1.5;      /* interlineado */
@@ -570,7 +570,8 @@ html, body {
 .search-input-wrapper {
     position: relative; /* Esencial para que el 'X' se posicione con respecto a este div */
     display: inline-block; /* Ajusta el tamaño al del input */
-    width: 90%; /* O el ancho que necesites */
+    width: 100%; /* O el ancho que necesites */
+    height: auto;
 }
 
 /* Estilo para el input dentro del contenedor */

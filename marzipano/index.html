@@ -18,11 +18,12 @@
       <div id="scene-info">
               <p>Cargando escena...</p>
       </div>
-      <br><hr><br>
-      
+    </div>
+    <div id="sidebar-content-2">
+      <hr>
       <div id="navigation">
         <h3>🧭 Navegación</h3><br>
-        <p><label for="destination"><span class="label">Destino:<br></span></label></p><br>
+        <p><label for="destination"><span class="label">Destino:</span></label></p><br>
         <div class="search-input-wrapper">
           <input 
           type="text" 
@@ -35,13 +36,20 @@
 
         <!-- Lista desplegable con escenas -->
         <datalist id="scene-list"></datalist>
-
-        <button id="btn-ruta">Indicaciones ➡️</button><br>
-        <button id="btn-clear-ruta" style="display:none;">Salir</button><br>
+        <div id="route-buttons">
+          <button id="btn-ruta">Indicaciones ➡️</button>
+          <button id="btn-backward" style="display:none;" class="toolbar-btn">
+            <img src="img/up.png" alt="Retroceder"></button>
+          <button id="btn-forward" style="display:none;" class="toolbar-btn">
+            <img src="img/down.png" alt="Avanzar"></button>
+        </div>
+        <button id="btn-clear-ruta" style="display:none;">❌ Salir navegación</button><br>
       </div>
     </div>
-
-    <div id="logo"><br><img src="img/logo_eps.png"> <br>
+    
+    <div id="logo">
+      <hr><br>
+      <img src="img/logo_eps.png"> <br>
       Demo - Map360 CATEPS<br>
       Creado por Cristian M. Rodríguez Muyulema<br>
       Máster Universitario en Sistemas Inteligentes de Transportes y Energía<br>
