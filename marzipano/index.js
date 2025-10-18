@@ -1,3 +1,4 @@
+// Variables globales y elementos DOM
 const viewerElement = document.getElementById('viewer'); 
 const sceneNameElement = document.querySelector('#titleBar .sceneName'); 
 const sceneInfo = document.getElementById('scene-info'); 
@@ -18,16 +19,9 @@ const API_BASE = "https://map360-backend.onrender.com";
 // Inicializar Marzipano 
 viewerElement.style.width = window.innerWidth + 'px';
 viewerElement.style.height = window.innerHeight + 'px';
-
 const viewer = new Marzipano.Viewer(viewerElement);
 
-// window.addEventListener('resize', () => {
-//   viewerElement.style.width = window.innerWidth + 'px';
-//   viewerElement.style.height = window.innerHeight + 'px';
-//   viewer.resize();
-// });
-
-// =================== AUTOROTATE ===================
+// Autorotación Pantalla
 const autorotate = Marzipano.autorotate({
   yawSpeed: 0.03,          // velocidad de rotación horizontal
   targetPitch: 0,          // mantiene la vista centrada verticalmente
@@ -61,7 +55,7 @@ if (autorotateToggleElement) {
   });
 }
 
-// =================== GESTIÓN DE ESCENAS Y HOTSPOTS ===================
+// Gestión de Escenas y Hostpots
 
 // Variables globales
 let allScenes = [];
@@ -76,6 +70,7 @@ let currentStepIndex = 0;
 let nextHotspotId = null; // hotspot a seguir
 let sidebarOpen = true;
 let activeRoute = [];
+let randomModeActive = false; // estado del modo aleatorio
 
 async function loadScenes() {
   sceneInfo.innerHTML = '<p>⏳ Cargando datos de las escenas...</p>';
@@ -222,12 +217,22 @@ async function loadScene(scene, retryCount = 0) {
     }
 
     // Cambiar escena
-    const cached = cachedScenes.get(scene.id_scene);
-    currentScene = cached.scene;
-    currentView = cached.view;
-    currentScene.switchTo();
+    // const cached = cachedScenes.get(scene.id_scene);
+    // currentScene = cached.scene;
+    // currentView = cached.view;
+    // currentScene.switchTo();
 
-    // ✅ Actualizar barra superior SIEMPRE
+    // Cambiar escena y actualizar el índice actual
+    const cached = cachedScenes.get(scene.id_scene);
+    if (cached) {
+      cached.scene.switchTo();
+      currentScene = scene; // ← guarda el objeto de datos actual (no el objeto Marzipano)
+      currentView = cached.view;
+      currentIndex = allScenes.findIndex(s => s.id_scene === scene.id_scene);
+      //console.log("Escena activa:", scene.scene_description, "Index:", currentIndex);
+    }
+
+    // Actualizar barra superior SIEMPRE
     const titleEl = document.querySelector('#titleBar .sceneName');
     if (titleEl) {
       titleEl.textContent = scene.scene_description || "Escena sin nombre";
@@ -279,6 +284,67 @@ zoomInBtn.addEventListener('click', () => {
 zoomOutBtn.addEventListener('click', () => {
   if (currentView) currentView.setFov(Math.min(currentView.fov() + 0.1, 4.0));
 });
+
+// Modo Aleatorio
+document.getElementById("aletorio").addEventListener("click", () => {
+  randomModeActive = !randomModeActive; // alternar modo ON/OFF
+
+  const btn = document.getElementById("aletorio");
+  if (randomModeActive) {
+    btn.classList.add("enabled");
+    btn.style.backgroundColor = "#4CAF50";
+    //btn.textContent = "⟳ Modo Aleatorio (ON)";
+    //console.log("🎲 Modo Aleatorio ACTIVADO");
+
+    // Iniciar cambio aleatorio
+    startRandomSceneRotation();
+
+  } else {
+    btn.classList.remove("enabled");
+    btn.style.backgroundColor = "";
+    //btn.textContent = "⟳ Modo Aleatorio (OFF)";
+    //console.log("🛑 Modo Aleatorio DESACTIVADO");
+
+    // Detener temporizador
+    clearTimeout(window.autoSceneTimer);
+  }
+});
+
+function startRandomSceneRotation() {
+  clearTimeout(window.autoSceneTimer);
+
+  // evitar cambios si estás navegando
+  if (navigationMode || !randomModeActive) return;
+
+  window.autoSceneTimer = setTimeout(() => {
+    if (!navigationMode && randomModeActive && allScenes.length > 1) {
+      let randomIndex;
+      do {
+        randomIndex = Math.floor(Math.random() * allScenes.length);
+      } while (randomIndex === currentIndex);
+
+      const randomScene = allScenes[randomIndex];
+      //console.log("🎲 Cambio aleatorio a escena:", randomScene.scene_description);
+
+      const cached = cachedScenes.get(randomScene.id_scene);
+      if (cached) {
+        currentScene = randomScene; // objeto de datos
+        currentView = cached.view;
+        currentIndex = randomIndex;
+        viewer.switchScene(cached.scene, cached.view, { transitionDuration: 1000 });
+        sceneNameElement.textContent = randomScene.scene_description;
+        updateActiveSceneMarker();
+        renderSidebar(randomScene);
+      } else {
+        loadScene(randomScene);
+      }
+    }
+
+    // reinicia el ciclo mientras siga activo
+    if (randomModeActive) startRandomSceneRotation();
+
+  }, 10000); // cambia cada 10s (ajústalo)
+}
 
 // ------------------- Menú de escenas -------------------
 function showSceneList() {
@@ -430,7 +496,7 @@ async function loadScenes() {
   }
 }
 
-// =================== 🚀 RUTAS DINÁMICAS MULTI-SALTO ===================
+// =================== RUTAS DINÁMICAS MULTI-SALTO ===================
 
 async function loadRoutes() {
   try {
@@ -608,6 +674,10 @@ toggleBtn.addEventListener('click', () => {
 function startNavigation(routeSteps) {
   if (!routeSteps.length) return;
   navigationMode = true;
+  viewer.stopMovement();  //Detener cualquier movimiento previo
+  viewer.setIdleMovement(Infinity);     // desactiva autorotación por inactividad
+  if (autorotateToggleElement) autorotateToggleElement.classList.remove('enabled');
+
   currentRouteSteps = routeSteps;
   currentStepIndex = 0;
   nextHotspotId = routeSteps[0]?.hotspot_id || null;
@@ -700,10 +770,14 @@ function exitNavigation() {
     icon.style.background = "";
     icon.style.borderRadius = "";
     icon.style.transition = "";
+    icon.style.cursor = "pointer"; // 🔑 Resetear cursor
   });
   
   // 🧹 2. Resetear variables de navegación
   navigationMode = false;
+  viewer.startMovement(autorotate);
+  viewer.setIdleMovement(3000, autorotate); // vuelve a activarse tras 3s de inactividad
+  if (autorotateToggleElement) autorotateToggleElement.classList.add('enabled');
   currentRouteSteps = [];
   currentStepIndex = 0;
   nextHotspotId = null;
@@ -762,45 +836,106 @@ function switchScene(scene) {
 }
 
 // =================== ✨ RESALTAR HOTSPOT SIGUIENTE ===================
+
 function highlightActiveHotspot(scene) {
   const hotspotEls = document.querySelectorAll(".hotspot-info");
-  //Resetear todos los hotspots de navegación
-  hotspotEls.forEach(el => {
-    el.querySelector(".hotspot-icon")?.style.removeProperty("background");
-    el.querySelector(".hotspot-icon")?.style.removeProperty("border-radius");
-    el.querySelector(".hotspot-icon")?.style.removeProperty("transition");
-    // Habilitar clicks por defecto
-    const h = scene.hotspots?.find(h => h.title === el.querySelector(".hotspot-info-title").textContent);
-    if (h && h.icon_id === 2) el.style.pointerEvents = "auto";
-  });
-
   const step = currentRouteSteps[currentStepIndex];
-  if (!step) return;
-
-  const hotspotTarget = scene.hotspots?.find(h => h.id_hotspots === step.hotspot_id);
-  if (!hotspotTarget) return;
+  const activeHotspotId = step?.hotspot_id;
 
   hotspotEls.forEach(el => {
-    const title = el.querySelector(".hotspot-info-title");
-    if (title && title.textContent === hotspotTarget.title) {
-      const icon = el.querySelector(".hotspot-icon");
-      if (icon) {
-        icon.style.transition = "background 0.3s";
-        icon.style.background = "rgba(0,128,255,0.6)";
-        icon.style.borderRadius = "50%";
+    const titleBox = el.querySelector(".hotspot-info-title");
+    const icon = el.querySelector(".hotspot-icon");
+    const h = scene.hotspots?.find(h => h.title === titleBox?.textContent);
+
+    // Resetear estilos y cursor
+    icon?.style.removeProperty("background");
+    icon?.style.removeProperty("border-radius");
+    icon?.style.removeProperty("transition");
+    icon.style.cursor = "pointer"; // por defecto
+    el.onclick = null; // Limpiar clicks previos
+
+    if (!h || h.icon_id !== 2) return; // solo hotspots de navegación
+
+    if (h.id_hotspots === activeHotspotId) {
+      // Hotspot activo: azul y clicable
+      icon.style.transition = "background 0.3s";
+      icon.style.background = "rgba(0,128,255,0.6)";
+      icon.style.borderRadius = "50%";
+      icon.style.cursor = "pointer";
+
+          // 🔹 Centrar vista hacia el hotspot
+      if (navigationMode && currentView) {
+        currentView.setYaw(h.yaw, true);   // true = animación suave
+        currentView.setPitch(h.pitch, true);
       }
 
-      // 🔒 Bloquear todos los demás hotspots de navegación
-      // hotspotEls.forEach(otherEl => {
-      //   const otherTitle = otherEl.querySelector(".hotspot-info-title");
-      //   if (otherTitle && otherTitle.textContent !== hotspotTarget.title) {
-      //     const h = scene.hotspots?.find(h => h.title === otherTitle.textContent);
-      //     if (h && h.icon_id === 2) otherEl.style.pointerEvents = "none";
-      //   }
-      // });
+      el.onclick = (e) => {
+        e.stopPropagation(); // prevenir listeners globales
+
+        if (navigationMode) {
+          // Avanzar en la ruta
+          goToStep(currentStepIndex + 1);
+        } else if (h.link_scene_id) {
+          // Cambiar a otra escena
+          const nextScene = allScenes.find(s => s.id_scene === h.link_scene_id);
+          if (nextScene) {
+            currentIndex = allScenes.indexOf(nextScene);
+            switchScene(nextScene);
+            renderSidebar(nextScene);
+            updateActiveSceneMarker();
+          }
+        }
+      };
+
+    } else {
+      // Hotspot que no pertenece a la ruta: bloquear click y mostrar X
+      el.onclick = (e) => e.stopPropagation(); // no hace nada
+      icon.style.cursor = "not-allowed"; // cursor tipo X
     }
   });
 }
+
+
+
+// function highlightActiveHotspot(scene) {
+//   const hotspotEls = document.querySelectorAll(".hotspot-info");
+//   //Resetear todos los hotspots de navegación
+//   hotspotEls.forEach(el => {
+//     el.querySelector(".hotspot-icon")?.style.removeProperty("background");
+//     el.querySelector(".hotspot-icon")?.style.removeProperty("border-radius");
+//     el.querySelector(".hotspot-icon")?.style.removeProperty("transition");
+//     // Habilitar clicks por defecto
+//     const h = scene.hotspots?.find(h => h.title === el.querySelector(".hotspot-info-title").textContent);
+//     if (h && h.icon_id === 2) el.style.pointerEvents = "auto";
+//   });
+
+//   const step = currentRouteSteps[currentStepIndex];
+//   if (!step) return;
+
+//   const hotspotTarget = scene.hotspots?.find(h => h.id_hotspots === step.hotspot_id);
+//   if (!hotspotTarget) return;
+
+//   hotspotEls.forEach(el => {
+//     const title = el.querySelector(".hotspot-info-title");
+//     if (title && title.textContent === hotspotTarget.title) {
+//       const icon = el.querySelector(".hotspot-icon");
+//       if (icon) {
+//         icon.style.transition = "background 0.3s";
+//         icon.style.background = "rgba(0,128,255,0.6)";
+//         icon.style.borderRadius = "50%";
+//       }
+
+//       // 🔒 Bloquear todos los demás hotspots de navegación
+//       // hotspotEls.forEach(otherEl => {
+//       //   const otherTitle = otherEl.querySelector(".hotspot-info-title");
+//       //   if (otherTitle && otherTitle.textContent !== hotspotTarget.title) {
+//       //     const h = scene.hotspots?.find(h => h.title === otherTitle.textContent);
+//       //     if (h && h.icon_id === 2) otherEl.style.pointerEvents = "none";
+//       //   }
+//       // });
+//     }
+//   });
+// }
 
 // Init
 loadScenes();
