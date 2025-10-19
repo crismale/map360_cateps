@@ -52,6 +52,7 @@ html, body {
   position: fixed;
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* mantiene logo abajo */
   top:0;
   left:0;
   width: 280px;
@@ -132,6 +133,11 @@ html, body {
   font-weight: bold;
 }
 
+#sidebar-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto; /* scroll solo para el contenido */
+}
+
 /* Contenedor para todo el contenido del sidebar */
 #sidebar-content {
   flex: 1 1 auto; /* ocupa todo el espacio disponible */
@@ -139,20 +145,24 @@ html, body {
 }
 
 #logo {
+  flex-shrink: 0;
   margin-top: auto; /* empuja hacia abajo */
   width: 100%;
   text-align: center;
-  /*border-top: 2px solid rgba(255, 255, 255, 0.2); /* opcional: separador visual */
   font-weight: bold;
   font-size: 10px;
   line-height: 1.5;      /* interlineado */
 }
 
 #logo img {
-  width: 100%;       /* ocupa todo el ancho disponible */
+  width: 90%;       /* ocupa todo el ancho disponible */
   height: auto;      /* mantiene proporciones */
-  display: block;    /* elimina espacios blancos debajo de la imagen */
+  /*display: block;    /* elimina espacios blancos debajo de la imagen */
   border-radius: 8px; /* opcional: bordes suaves */
+}
+
+#logo a:visited {
+  color: #002aff;
 }
 
 .github-logo {
