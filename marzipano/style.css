@@ -729,6 +729,7 @@ html, body {
     z-index: 3000; /* por encima de todo */
     transition: left 0.3s ease;
   }
+}
 
 /* --- Corrección visual del visor --- */
 #viewer {
