@@ -12,38 +12,40 @@
 <body>
   <!-- Sidebar -->
   <div id="sidebar">
-    <!-- Contenedor scrollable -->
-    <div id="sidebar-content">
-      <h2>📍Ubicación Actual:</h2><br>
-      <div id="scene-info">
-              <p>Cargando escena...</p>
-      </div>
-    </div>
-    <div id="sidebar-content-2">
-      <hr>
-      <div id="navigation">
-        <h3>🧭 Navegación</h3><br>
-        <p><label for="destination"><span class="label">Destino:</span></label></p><br>
-        <div class="search-input-wrapper">
-          <input 
-          type="text" 
-          id="destination" 
-          placeholder="Escribe o selecciona una escena..." 
-          list="scene-list"
-          class="input-with-clear"/>
-          <span class="clear-button" id="clear-destination-btn">&times;</span>
-        </div><br><br>
-
-        <!-- Lista desplegable con escenas -->
-        <datalist id="scene-list"></datalist>
-        <div id="route-buttons">
-          <button id="btn-ruta">Indicaciones ➡️</button>
-          <button id="btn-backward" style="display:none;" class="toolbar-btn">
-            <img src="img/up.png" alt="Retroceder"></button>
-          <button id="btn-forward" style="display:none;" class="toolbar-btn">
-            <img src="img/down.png" alt="Avanzar"></button>
+    <div id="sidebar-scroll">
+      <!-- Contenedor scrollable -->
+      <div id="sidebar-content">
+        <h2>📍Ubicación Actual:</h2><br>
+        <div id="scene-info">
+                <p>Cargando escena...</p>
         </div>
-        <button id="btn-clear-ruta" style="display:none;">❌ Salir navegación</button><br>
+      </div>
+      <div id="sidebar-content-2">
+        <hr>
+        <div id="navigation">
+          <h3>🧭 Navegación</h3><br>
+          <p><label for="destination"><span class="label">Destino:</span></label></p><br>
+          <div class="search-input-wrapper">
+            <input 
+            type="text" 
+            id="destination" 
+            placeholder="Escribe o selecciona una escena..." 
+            list="scene-list"
+            class="input-with-clear"/>
+            <span class="clear-button" id="clear-destination-btn">&times;</span>
+          </div><br><br>
+
+          <!-- Lista desplegable con escenas -->
+          <datalist id="scene-list"></datalist>
+          <div id="route-buttons">
+            <button id="btn-ruta">Indicaciones ➡️</button>
+            <button id="btn-backward" style="display:none;" class="toolbar-btn">
+              <img src="img/up.png" alt="Retroceder"></button>
+            <button id="btn-forward" style="display:none;" class="toolbar-btn">
+              <img src="img/down.png" alt="Avanzar"></button>
+          </div>
+          <button id="btn-clear-ruta" style="display:none;">❌ Salir navegación</button><br>
+        </div>
       </div>
     </div>
     
