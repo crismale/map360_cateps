@@ -642,15 +642,20 @@ document.getElementById("btn-ruta").addEventListener("click", async() => {
   try {
     const res = await fetch(`${API_BASE}/api/search?query=${encodeURIComponent(destDesc)}`);
     const data = await res.json();
-    console.log(destDesc,res, data);
+    //console.log(destDesc,res, data);
 
     if (data.exact) {
       // ✅ Coincidencia exacta: seguir con tu lógica
       const startId = allScenes[currentIndex].id_scene;
       const endId = data.exact.id_scene;
       const path = findShortestPath(startId, endId);
-      console.log("Ruta calculada:", startId, "→", endId, path);
+      //console.log("Ruta calculada:", startId, "→", endId, path);
       showRouteInstructions(path);
+
+      // Mostrar botones de navegación
+      document.getElementById("btn-forward").style.display = "inline-block";
+      document.getElementById("btn-backward").style.display = "inline-block";
+      document.getElementById("btn-clear-ruta").style.display = "inline-block";
     } else if (data.similar.length > 0) {
       // ⚙️ Mostrar opciones al usuario
       showSuggestions(data.similar);
@@ -661,28 +666,6 @@ document.getElementById("btn-ruta").addEventListener("click", async() => {
     console.error("Error al buscar:", err);
     alert("Error conectando con el servidor.");
   }
-
-  // // Buscar en allScenes normalizando también
-  // const destScene = allScenes.find(s => 
-  //   s.scene_description.trim().replace(/\s+/g, " ").toLowerCase() === destDesc
-  // );
-
-  // if (!destScene) {
-  //   alert("⚠️ Selecciona un destino válido.");
-  //   return;
-  // }
- 
-  // const startId = allScenes[currentIndex].id_scene;
-  // const endId = destScene.id_scene;
-
-  // const path = findShortestPath(startId, endId);
-  // //console.log("Ruta calculada:", startId, "→", endId, path);
-
-  // showRouteInstructions(path);
-  // // Mostrar botones de navegación
-  // document.getElementById("btn-forward").style.display = "inline-block";
-  // document.getElementById("btn-backward").style.display = "inline-block";
-  // document.getElementById("btn-clear-ruta").style.display = "inline-block";
 });
 
 // Mostrar sugerencias si no hay coincidencia exacta
@@ -699,6 +682,10 @@ function showSuggestions(similarScenes) {
       const path = findShortestPath(startId, endId);
       showRouteInstructions(path);
       container.innerHTML = "";
+      // Mostrar botones de navegación
+      document.getElementById("btn-forward").style.display = "inline-block";
+      document.getElementById("btn-backward").style.display = "inline-block";
+      document.getElementById("btn-clear-ruta").style.display = "inline-block";
     });
     container.appendChild(btn);
   });

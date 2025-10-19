@@ -215,6 +215,36 @@ html, body {
   color: #111; /* o el que prefieras */
 }
 
+/* Botones de sugerencias */
+.suggestion-btn {
+  display: block;               /* cada botón en una línea */
+  width: 90%;                  /* ocupa todo el ancho del contenedor */
+  margin: 6px 0;                /* espacio vertical entre botones */
+  padding: 10px 15px;           /* espacio interno */
+  background-color: #2c7dd3;    /* azul atractivo */
+  color: white;                 /* texto blanco */
+  font-size: 16px;
+  font-weight: 500;
+  border: none;                 /* quitar borde por defecto */
+  border-radius: 8px;           /* bordes redondeados */
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+  text-align: left;             /* alineación del texto a la izquierda */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.suggestion-btn:hover {
+  background-color: #0056b3;    /* azul más oscuro al pasar el mouse */
+  transform: translateY(-2px);  /* pequeño levantamiento */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.suggestion-btn:active {
+  background-color: #004080;    /* más oscuro al hacer click */
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
 .hotspot-list {
   list-style-type: disc;  /* viñetas normales redondas */
   padding-left: 20px;     /* espacio para la viñeta */
