@@ -15,14 +15,14 @@ const Search = {
 
   async findSimilarScenes(query) {
     const sql = `
-      SELECT s.id_scene,
-             s.description AS scene_description,
-             similarity(k.keyword, $1) AS score
-      FROM public.scene_keywords k
-      JOIN public.scenes s ON s.id_scene = k.scene_id
-      WHERE k.keyword % $1
-      ORDER BY score DESC
-      LIMIT 10;
+        SELECT s.id_scene,
+            s.description AS scene_description,
+            similarity(LOWER(k.keyword), LOWER($1)) AS score
+        FROM public.scene_keywords k
+        JOIN public.scenes s ON s.id_scene = k.scene_id
+        WHERE similarity(LOWER(k.keyword), LOWER($1)) > 0.2
+        ORDER BY score DESC
+        LIMIT 10;
     `;
     const { rows } = await pool.query(sql, [query]);
     return rows;
