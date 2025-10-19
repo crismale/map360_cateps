@@ -721,6 +721,7 @@ document.getElementById("btn-backward").addEventListener("click", () => {
 });
 
 toggleBtn.addEventListener('click', () => {
+  const isMobile = window.innerWidth <= 768; // detectar móvil
   sidebar.classList.toggle('closed');
   sidebarOpen = !sidebarOpen;
 
@@ -728,7 +729,15 @@ toggleBtn.addEventListener('click', () => {
   toggleBtn.textContent = sidebarOpen ? '◀' : '▶'; 
   toggleBtn.title = sidebarOpen ? 'Cerrar barra lateral' : 'Abrir barra lateral';
   // Ajustar posición del visor (solo por seguridad si no aplica CSS)
-  viewerDiv.style.left = sidebarOpen ? '280px' : '0';
+  if (!isMobile) {
+    // En escritorio: ajusta el viewer normalmente
+    viewerDiv.style.left = sidebarOpen ? '280px' : '0';
+  } else {
+    // En móvil: animación tipo "deslizar"
+    sidebar.style.transform = sidebarOpen ? 'translateX(0)' : 'translateX(-100%)';
+    viewerDiv.style.left = '0'; // viewer siempre ocupa toda la pantalla
+    toggleBtn.style.left = sidebarOpen ? '280px' : '10px'; // mover botón acorde
+  }
 });
 
 function startNavigation(routeSteps) {
