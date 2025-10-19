@@ -661,9 +661,8 @@ html, body {
     transform: rotate(180deg);
   }
 
-  #sidebar.closed + #toggle-sidebar {
-    left: 10px;
-    transform: rotate(180deg);
+  #sidebar:not(.closed) ~ #toggle-sidebar {
+    left: calc(240px + 10px);
   }
 
   #viewer {
@@ -700,38 +699,6 @@ html, body {
     transition: transform 0.3s ease;
     z-index: 2000;
     overscroll-behavior: contain;
-  }
-
-  #sidebar.open {
-    transform: translateX(0);
-  }
-
-  #sidebar-scroll {
-    height: calc(100vh - 120px); /* ajusta según altura del logo + padding */
-  }
-
-  #toggle-sidebar {
-    position: fixed;
-    top: 50%;
-    left: 10px;
-    background-color: rgba(0, 123, 255, 0.9);
-    color: white;
-    border: none;
-    padding: 10px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 3000; /* por encima de todo */
-    transition: left 0.3s ease;
-  }
-
-  #sidebar.closed ~ #toggle-sidebar {
-    left: 10px; /* borde izquierdo de la pantalla */
-    transform: rotate(180deg);
-  }
-
-  #sidebar.closed + #toggle-sidebar {
-    left: 10px;
-    transform: rotate(180deg);
   }
 
   #viewer {
