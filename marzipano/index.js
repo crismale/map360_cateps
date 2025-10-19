@@ -129,7 +129,6 @@ async function loadScenes() {
   }
 }
 
-
 // Render sidebar + título
 function renderSidebar(scene) {
   const hotspots = scene.hotspots || []; // fallback seguro
@@ -571,7 +570,6 @@ function buildGraph() {
   return graph;
 }
 
-
 function findShortestPath(startId, endId) {
   const graph = buildGraph();
   const distances = {};
@@ -609,7 +607,6 @@ function findShortestPath(startId, endId) {
       }
     });
   }
-  
 
   // Reconstrucción de ruta
   const path = [];
@@ -630,7 +627,6 @@ function showRouteInstructions(path) {
   }
   startNavigation(path); // 👈 ahora arranca modo navegación
 }
-
 
 // =================== EVENTOS DE BOTONES ===================
 document.getElementById("btn-ruta").addEventListener("click", () => {
