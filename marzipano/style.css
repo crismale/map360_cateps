@@ -685,14 +685,23 @@ html, body {
 /* 🌄 Ajustes específicos para modo horizontal (landscape) en móviles */
 @media (max-width: 900px) and (orientation: landscape) {
   #sidebar {
+    position: fixed;
     top: 0;
     left: 0;
     width: 280px;
     height: 100vh;
+    background: rgba(40,40,40,0.95);
+    display: flex;
+    flex-direction: column;
+    z-index: 2000;
     transform: translateX(0); /* asegurar que esté visible */
     overflow-y: auto;
     padding-bottom: 50px; /* evita corte inferior */
     overscroll-behavior: contain;
+  }
+
+  #sidebar-scroll {
+    height: calc(100vh - 120px); /* ajusta según altura del logo + padding */
   }
 
   #viewer {
@@ -702,18 +711,24 @@ html, body {
   }
 
   #titleBar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+  left: 280px;
+  right: 0;
+  transition: left 0.3s ease, width 0.3s ease;
   }
   /* Toggle sidebar */
   #toggle-sidebar {
-    left: 290px; /* al lado del sidebar */
+    position: fixed;
     top: 50%;
-    transform: translateY(-50%);
+    left: 10px;
+    background-color: rgba(0, 123, 255, 0.9);
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 3000; /* por encima de todo */
+    transition: left 0.3s ease;
   }
-}
 
 /* --- Corrección visual del visor --- */
 #viewer {
