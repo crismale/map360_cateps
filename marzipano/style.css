@@ -656,6 +656,16 @@ html, body {
     transition: left 0.3s ease;
   }
 
+  #sidebar.closed ~ #toggle-sidebar {
+    left: 10px; /* borde izquierdo de la pantalla */
+    transform: rotate(180deg);
+  }
+
+  #sidebar.closed + #toggle-sidebar {
+    left: 10px;
+    transform: rotate(180deg);
+  }
+
   #viewer {
     top:0px;
     left: 0 !important;
@@ -712,6 +722,16 @@ html, body {
     cursor: pointer;
     z-index: 3000; /* por encima de todo */
     transition: left 0.3s ease;
+  }
+
+  #sidebar.closed ~ #toggle-sidebar {
+    left: 10px; /* borde izquierdo de la pantalla */
+    transform: rotate(180deg);
+  }
+
+  #sidebar.closed + #toggle-sidebar {
+    left: 10px;
+    transform: rotate(180deg);
   }
 
   #viewer {
