@@ -686,17 +686,20 @@ html, body {
 @media (max-width: 900px) and (orientation: landscape) {
   #sidebar {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 280px;
-    height: 100vh;
-    background: rgba(40,40,40,0.95);
     display: flex;
     flex-direction: column;
-    z-index: 2000;
-    transform: translateX(0); /* asegurar que esté visible */
+    top:0;
+    left:0;
+    width: 280px;
+    height: 100%;
+    background: rgba(136, 136, 136, 0.85);
+    border-right: 1px solid #ddd;
+    padding: 10px;
     overflow-y: auto;
-    padding-bottom: 50px; /* evita corte inferior */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    transform: translateX(0); /* asegurar que esté visible */
+    transition: transform 0.3s ease;
+    z-index: 2000;
     overscroll-behavior: contain;
   }
 
@@ -715,19 +718,29 @@ html, body {
   right: 0;
   transition: left 0.3s ease, width 0.3s ease;
   }
-  /* Toggle sidebar */
+
   #toggle-sidebar {
     position: fixed;
     top: 50%;
     left: 10px;
-    background-color: rgba(0, 123, 255, 0.9);
+    background: #007bff;
     color: white;
     border: none;
-    padding: 10px 12px;
-    border-radius: 6px;
+    padding: 20px 10px;
+    border-radius: 4px;
     cursor: pointer;
-    z-index: 3000; /* por encima de todo */
-    transition: left 0.3s ease;
+    transition: left 0.3s ease, transform 0.3s ease,background 0.3s ease;
+    z-index: 3000;
+  }
+
+   /* Mover el toggle cuando el sidebar esté cerrado/abierto */
+  #sidebar.closed ~ #toggle-sidebar {
+    left: 10px;
+    transform: rotate(180deg);
+  }
+
+  #sidebar:not(.closed) ~ #toggle-sidebar {
+    left: calc(240px + 10px); /* 240px ancho móvil + separación */
   }
 }
 
