@@ -629,36 +629,81 @@ function showRouteInstructions(path) {
 }
 
 // =================== EVENTOS DE BOTONES ===================
-document.getElementById("btn-ruta").addEventListener("click", () => {
+document.getElementById("btn-ruta").addEventListener("click", async() => {
   // Leer y normalizar el texto ingresado
-  let destDesc = document.getElementById("destination").value;
+  let destDesc = document.getElementById("destination").value.trim();
 
   destDesc = destDesc.trim();                     // quitar espacios inicio/fin
   destDesc = destDesc.replace(/\s+/g, " ");       // convertir múltiples espacios en 1
   destDesc = destDesc.toLowerCase();              // ignorar mayúsculas/minúsculas
 
-  // Buscar en allScenes normalizando también
-  const destScene = allScenes.find(s => 
-    s.scene_description.trim().replace(/\s+/g, " ").toLowerCase() === destDesc
-  );
+  if (!destDesc) return alert("⚠️ Escribe un destino.");
 
-  if (!destScene) {
-    alert("⚠️ Selecciona un destino válido.");
-    return;
+  try {
+    const res = await fetch(`${API_BASE}/api/search?query=${encodeURIComponent(destDesc)}`);
+    const data = await res.json();
+    console.log(destDesc,res, data);
+
+    if (data.exact) {
+      // ✅ Coincidencia exacta: seguir con tu lógica
+      const startId = allScenes[currentIndex].id_scene;
+      const endId = data.exact.id_scene;
+      const path = findShortestPath(startId, endId);
+      console.log("Ruta calculada:", startId, "→", endId, path);
+      showRouteInstructions(path);
+    } else if (data.similar.length > 0) {
+      // ⚙️ Mostrar opciones al usuario
+      showSuggestions(data.similar);
+    } else {
+      alert("❌ No se encontraron coincidencias.");
+    }
+  } catch (err) {
+    console.error("Error al buscar:", err);
+    alert("Error conectando con el servidor.");
   }
 
-  const startId = allScenes[currentIndex].id_scene;
-  const endId = destScene.id_scene;
+  // // Buscar en allScenes normalizando también
+  // const destScene = allScenes.find(s => 
+  //   s.scene_description.trim().replace(/\s+/g, " ").toLowerCase() === destDesc
+  // );
 
-  const path = findShortestPath(startId, endId);
-  //console.log("Ruta calculada:", startId, "→", endId, path);
+  // if (!destScene) {
+  //   alert("⚠️ Selecciona un destino válido.");
+  //   return;
+  // }
+ 
+  // const startId = allScenes[currentIndex].id_scene;
+  // const endId = destScene.id_scene;
 
-  showRouteInstructions(path);
-  // Mostrar botones de navegación
-  document.getElementById("btn-forward").style.display = "inline-block";
-  document.getElementById("btn-backward").style.display = "inline-block";
-  document.getElementById("btn-clear-ruta").style.display = "inline-block";
+  // const path = findShortestPath(startId, endId);
+  // //console.log("Ruta calculada:", startId, "→", endId, path);
+
+  // showRouteInstructions(path);
+  // // Mostrar botones de navegación
+  // document.getElementById("btn-forward").style.display = "inline-block";
+  // document.getElementById("btn-backward").style.display = "inline-block";
+  // document.getElementById("btn-clear-ruta").style.display = "inline-block";
 });
+
+// Mostrar sugerencias si no hay coincidencia exacta
+function showSuggestions(similarScenes) {
+  const container = document.getElementById("suggestions");
+  container.innerHTML = ""; // limpia anteriores
+  similarScenes.forEach(s => {
+    const btn = document.createElement("button");
+    btn.textContent = s.scene_description;
+    btn.className = "suggestion-btn";
+    btn.addEventListener("click", () => {
+      const startId = allScenes[currentIndex].id_scene;
+      const endId = s.id_scene;
+      const path = findShortestPath(startId, endId);
+      showRouteInstructions(path);
+      container.innerHTML = "";
+    });
+    container.appendChild(btn);
+  });
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const inputField = document.getElementById('destination');

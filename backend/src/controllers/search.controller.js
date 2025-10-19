@@ -16,26 +16,29 @@ const SearchController = {
       const exactMatch = await Search.findExactMatch(normalizedQuery);
 
       if (exactMatch) {
-        return res.json([{
-          ...exactMatch,
-          match_type: "exact"
-        }]);
+        return res.json({
+          exact: exactMatch,
+          similar: []
+        });
       }
 
       // 🔍 2️⃣ Si no hay exacta, buscar similares con pg_trgm
       const similarMatches = await Search.findSimilarScenes(normalizedQuery);
 
-      if (similarMatches.length === 0) {
-        return res.status(404).json({
-          message: "❌ No se encontraron coincidencias similares.",
-          query: normalizedQuery
+      if (!similarMatches || similarMatches.length === 0) {
+        return res.json({
+          exact: null,
+          similar: [],
+          message: `❌ No se encontraron coincidencias para "${normalizedQuery}".`
         });
       }
 
-      return res.json(similarMatches.map(r => ({
-        ...r,
-        match_type: "similar"
-      })));
+      // 🔹 Hay coincidencias similares
+      return res.json({
+        exact: null,
+        similar: similarMatches,
+        message: `⚙️ Se encontraron ${similarMatches.length} coincidencias similares.`
+      });
 
     } catch (error) {
       console.error("Error en búsqueda avanzada:", error);
