@@ -513,25 +513,6 @@ function fillDestinationList() {
   });
 }
 
-// Modifica loadScenes para rellenar la lista al cargar escenas
-// async function loadScenes() {
-//   try {
-//     const response = await fetch(`${API_BASE}/api/scenes`);
-//     allScenes = await response.json();
-//     if (!allScenes.length) {
-//       sceneInfo.innerHTML = '<p>No hay escenas disponibles.</p>';
-//       return;
-//     }
-//     await loadScene(allScenes[currentIndex]);
-//     renderSceneList();
-//     fillDestinationList();   // 👈 aquí rellenamos el datalist
-//     await loadRoutes(); 
-//   } catch (err) {
-//     console.error('Error cargando escenas:', err);
-//     sceneInfo.innerHTML = '<p>Error cargando escenas</p>';
-//   }
-// }
-
 // =================== RUTAS DINÁMICAS MULTI-SALTO ===================
 
 async function loadRoutes() {

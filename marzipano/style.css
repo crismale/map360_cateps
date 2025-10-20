@@ -155,21 +155,31 @@ html, body {
 }
 
 #logo img {
-  width: 90%;       /* ocupa todo el ancho disponible */
+  width: 100%;       /* ocupa todo el ancho disponible */
   height: auto;      /* mantiene proporciones */
-  /*display: block;    /* elimina espacios blancos debajo de la imagen */
   border-radius: 8px; /* opcional: bordes suaves */
+  background: rgba(255, 255, 255, 0.95);
 }
 
 #logo a:visited {
   color: #002aff;
 }
 
-.github-logo {
-  width: 60px !important;;      /* ancho deseado */
-  height: auto !important;;      /* mantiene proporciones */
-  display: block;
+.social-links {
+  display: flex;           /* alinea los hijos en fila */
+  justify-content: center; /*Centra horizontalmente los íconos */
+  gap: 10px;               /* espacio entre los íconos */
+  align-items: center;     /* centra verticalmente si hay distintos tamaños */
   margin: 0 auto;    /* centra la imagen */
+  margin-top: 5px;         /* Opcional, separa del contenido superior */
+}
+
+.github-logo {
+  width: 30px !important;;      /* ancho deseado */
+  height: auto !important;;      /* mantiene proporciones */
+  display: flex;
+  margin: 0 auto;    /* centra la imagen */
+  background: none !important; 
 }
 
 /* Tooltip general */
@@ -203,14 +213,14 @@ html, body {
 }
 
 .label_title {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
   color: #111; /* o el que prefieras */
 }
 
 .label {
   padding: 0 10px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: #111; /* o el que prefieras */
 }
@@ -610,7 +620,7 @@ html, body {
 .search-input-wrapper {
     position: relative; /* Esencial para que el 'X' se posicione con respecto a este div */
     display: inline-block; /* Ajusta el tamaño al del input */
-    width: 100%; /* O el ancho que necesites */
+    width: 90%; /* O el ancho que necesites */
     height: auto;
 }
 
@@ -669,13 +679,17 @@ html, body {
     width: 80%;
     max-width: 280px;
     height: calc(100% - 50px);
-    background: rgba(40, 40, 40, 0.65);
+    background: rgba(136, 136, 136, 0.85);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 2000; /* por encima del viewer */
     box-shadow: 3px 0 10px rgba(0, 0, 0, 0.3);
     overflow-y: auto;
     overscroll-behavior: contain;
+  }
+
+  .logo-principal {
+    content: url("img/logo_useps_m.png");
   }
 
   #sidebar.open {
@@ -717,6 +731,7 @@ html, body {
     z-index: 2000;
     overscroll-behavior: contain;
   }
+  
 
   #viewer {
     top:0px;
