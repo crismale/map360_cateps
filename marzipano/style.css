@@ -731,7 +731,6 @@ html, body {
     z-index: 2000;
     overscroll-behavior: contain;
   }
-  
 
   #viewer {
     top:0px;

@@ -14,11 +14,10 @@ const sidebar = document.getElementById('sidebar');
 const viewerDiv = document.getElementById('viewer');
 const toggleBtn = document.getElementById('toggle-sidebar');
 const API_BASE = "https://map360-backend.onrender.com";
-// // Obtener el parámetro 'id' de la URL
+// Obtener el parámetro 'id' de la URL
 const urlParams = new URLSearchParams(window.location.search);
 const sceneIdFromUrl = urlParams.get('id'); // esto devuelve "10" si la URL es ?id=10
 //console.log('sceneIdFromUrl:', sceneIdFromUrl);
-
 
 // Inicializar Marzipano 
 viewerElement.style.width = window.innerWidth + 'px';
